@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: gymplus-frontend-new:latest
+    container_name: gymplus-frontend-new
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_APP_URL: https://gympluspro.ir
+    expose:
+      - "3000"
+    networks:
+      - gym_default
+
+networks:
+  gym_default:
+    external: true

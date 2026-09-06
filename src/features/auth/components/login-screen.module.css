@@ -1,0 +1,604 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  direction: ltr;
+  background: #ffffff;
+}
+
+.panel {
+  flex: 1.05;
+  position: relative;
+  overflow: hidden;
+}
+
+.content {
+  flex: 0.95;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  direction: rtl;
+  background: #ffffff;
+}
+
+.showcase {
+  min-height: 100vh;
+  background-image: url("/assets/images/login-side-visual.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.formShell {
+  min-height: 100vh;
+  width: min(100%, 676px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 58px 40px 40px;
+  background: #ffffff;
+}
+
+.formBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #111827;
+  font-size: 1rem;
+  direction: ltr;
+}
+
+.formBrand strong {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.formBrandIcon {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.formBrandIcon img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.formBrandBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 77px;
+  height: 27px;
+  padding: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #defd7b 0%, #b5f01d 100%);
+  color: #1e2a0d;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.formContent {
+  width: min(100%, 430px);
+}
+
+.formHeader {
+  text-align: center;
+}
+
+.formHeader h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.formHeader p {
+  margin: 16px 0 0;
+  color: #667085;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+}
+
+.form {
+  margin-top: 54px;
+}
+
+.field + .field {
+  margin-top: 14px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 10px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.labelActive {
+  color: #2b6dff;
+}
+
+.labelError {
+  color: #ff4d43;
+}
+
+.inputFrame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  direction: ltr;
+  min-height: 58px;
+  border-radius: 14px;
+  border: 1px solid #d9deea;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.02);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.inputFrame:focus-within {
+  border-color: #2b6dff;
+  box-shadow: 0 0 0 3px rgba(43, 109, 255, 0.12);
+}
+
+.inputFrameActive {
+  border-color: #2b6dff;
+}
+
+.inputFrameError {
+  border-color: #ff4d43;
+}
+
+.inputFrameError:focus-within {
+  border-color: #ff4d43;
+  box-shadow: 0 0 0 3px rgba(255, 77, 67, 0.1);
+}
+
+.inputFrame input {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0 16px;
+  background: transparent;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 400;
+  direction: rtl;
+  text-align: right;
+}
+
+.inputFrame input[type="email"] {
+  direction: ltr;
+  text-align: left;
+}
+
+.inputFrame input[type="email"]:placeholder-shown {
+  direction: rtl;
+  text-align: right;
+}
+
+.inputFrame input::placeholder {
+  color: #7b8294;
+}
+
+.leadingIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-left: 8px;
+  border: 0;
+  background: transparent;
+  color: #111827;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.leadingIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.errorText {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin: 8px 4px 0 0;
+  color: #ff4d43;
+  font-size: 0.92rem;
+}
+
+.errorText svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.formMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d9deea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.checkboxChecked {
+  border-color: #111827;
+  background: #111827;
+}
+
+.checkboxChecked svg {
+  width: 14px;
+  height: 14px;
+}
+
+.forgotLink {
+  color: #316cff;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.submitButton {
+  width: min(100%, 400px);
+  height: 48px;
+  min-height: 48px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 16px;
+  background: #e6e7ec;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 16px;
+  font-weight: 600;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+}
+
+.submitButtonActive {
+  background: #ff6b13;
+  cursor: pointer;
+}
+
+.submitButtonActive:hover {
+  transform: translateY(-1px);
+}
+
+.submitButton:focus-visible,
+.forgotLink:focus-visible,
+.backLink:focus-visible,
+.checkboxVisual:focus-visible {
+  outline: 2px solid #ff620d;
+  outline-offset: 3px;
+}
+
+.submitButtonActive:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.submitButton:disabled {
+  opacity: 0.62;
+}
+
+.buttonSpinner {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: -3px;
+  border: 2px solid currentColor;
+  border-left-color: transparent;
+  border-radius: 50%;
+  animation: authSpin 700ms linear infinite;
+}
+
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loginScreen *,
+  .forgotScreen * {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+.formFooter {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #777f90;
+  font-size: 0.98rem;
+}
+
+.forgotShell {
+  position: relative;
+}
+
+.backLink {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #667085;
+  font-size: 14px;
+  font-weight: 400;
+  direction: ltr;
+}
+
+.backArrow {
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.forgotContent {
+  margin-block: auto;
+}
+
+.forgotForm {
+  margin-top: 40px;
+}
+
+.forgotForm .submitButton {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.forgotSpacer {
+  width: 1px;
+  height: 20px;
+}
+
+.passwordGuide {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid #e3e7ef;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #667085;
+  font-size: 12px;
+}
+
+.strengthBars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  direction: ltr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.strengthBars span {
+  height: 3px;
+  border-radius: 999px;
+  background: #e3e7ef;
+}
+
+.strengthBars .strengthBarPassed {
+  background: #18a96b;
+}
+
+.passwordGuide p {
+  margin: 0 0 8px;
+  color: #344054;
+  font-weight: 600;
+}
+
+.passwordGuide ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passwordGuide li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.passwordGuide li svg {
+  width: 14px;
+  height: 14px;
+  color: #c7ccd5;
+  flex-shrink: 0;
+}
+
+.passwordGuide .rulePassed {
+  color: #18a96b;
+}
+
+.passwordGuide .rulePassed svg {
+  color: #18a96b;
+}
+
+.footerDot {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1100px) {
+  .page {
+    display: block;
+  }
+
+  .panel {
+    display: none;
+  }
+
+  .formShell {
+    width: min(100%, 460px);
+    padding-inline: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .formShell {
+    width: 100%;
+    padding: 28px 10px 28px;
+  }
+
+  .formBrand {
+    align-self: flex-start;
+    transform: scale(0.88);
+    transform-origin: right top;
+  }
+
+  .formContent {
+    width: 100%;
+    margin-top: 92px;
+  }
+
+  .formHeader h1 {
+    font-size: 20px;
+  }
+
+  .formHeader p {
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .form {
+    margin-top: 38px;
+  }
+
+  .inputFrame {
+    min-height: 56px;
+    border-radius: 13px;
+  }
+
+  .inputFrame input {
+    font-size: 14px;
+  }
+
+  .formMeta {
+    margin-top: 14px;
+    gap: 10px;
+  }
+
+  .checkboxLabel,
+  .forgotLink,
+  .formFooter {
+    font-size: 14px;
+  }
+
+  .submitButton {
+    width: 100%;
+    min-height: 48px;
+    height: 48px;
+    margin-top: 18px;
+    border-radius: 14px;
+  }
+
+  .formFooter {
+    gap: 14px;
+  }
+
+  .forgotShell {
+    display: block;
+    padding: 28px 20px;
+  }
+
+  .forgotShell .formBrand {
+    display: flex;
+    width: max-content;
+    margin-inline: auto;
+    transform-origin: center top;
+  }
+
+  .forgotContent {
+    position: absolute;
+    top: 39.5%;
+    right: 20px;
+    left: 20px;
+    width: auto;
+    margin: 0;
+  }
+
+  .forgotContent .formHeader p {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .forgotForm {
+    margin-top: 28px;
+  }
+
+  .forgotForm .field + .field {
+    margin-top: 14px;
+  }
+
+  .forgotForm .label {
+    margin-bottom: 6px;
+  }
+
+  .forgotForm .inputFrame {
+    min-height: 48px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .forgotForm .submitButton {
+    margin-top: 18px;
+    border-radius: 10px;
+  }
+
+  .backLink {
+    position: absolute;
+    top: 30px;
+    left: 20px;
+  }
+
+  .passwordGuide {
+    padding: 12px;
+  }
+}
+
+/* Figma Login frames: 1440x1024 desktop and 393x852 mobile. */
+.page{font-family:var(--font-yekan-bakh),"Yekan Bakh","Segoe UI",sans-serif;letter-spacing:0}.page *{letter-spacing:0}.panel,.content{flex:0 0 50%;width:50%}.formShell{width:100%;max-width:720px;padding:64px 40px}.formBrand{height:36px;gap:8px}.formBrand strong{font-size:16px;font-weight:700;line-height:24px}.formBrandBadge{width:77px;height:27px;border-radius:4px;font-size:12px;font-weight:600}.formContent{width:400px}.formHeader h1{font-size:16px;line-height:24px;font-weight:600}.formHeader p{margin-top:8px;font-size:14px;line-height:24px}.form{margin-top:32px}.field+.field{margin-top:12px}.label{margin-bottom:6px;font-size:13px;line-height:21px}.inputFrame{min-height:48px;height:48px;border-radius:4px;border-color:#d9dde2;box-shadow:none}.inputFrame input{padding:0 16px;font-size:13px;line-height:21px}.leadingIcon{width:40px;height:40px;margin-left:4px}.leadingIcon svg{width:20px;height:20px}.errorText{margin-top:6px;font-size:12px;line-height:18px}.formMeta{margin-top:16px}.checkboxLabel,.forgotLink{font-size:13px;line-height:22px}.checkbox{width:20px;height:20px;border-radius:4px}.submitButton{height:48px;margin-top:24px;border-radius:4px;background:#e2e4e8;font-size:14px;font-weight:600}.submitButtonActive{background:#ff620d}.formFooter{font-size:13px}.backLink{font-size:13px}.forgotForm{margin-top:32px}.passwordGuide{border-radius:4px}
+@media(max-width:1100px){.content{width:100%;min-height:100vh}.formShell{width:100%;max-width:460px}}
+@media(max-width:640px){.formShell{width:100%;max-width:none;padding:32px 16px}.formBrand{align-self:center;transform:none}.formContent{width:361px;max-width:100%;margin-top:0;margin-block:auto}.formHeader h1{font-size:16px;line-height:22px}.formHeader p{margin-top:8px;font-size:13px;line-height:21px}.form{margin-top:32px}.inputFrame{min-height:48px;height:48px;border-radius:4px}.formMeta{margin-top:16px}.submitButton{height:48px;min-height:48px;margin-top:24px;border-radius:4px}.forgotShell{padding:32px 16px}.forgotContent{right:16px;left:16px;width:auto}.forgotForm .inputFrame,.forgotForm .submitButton{border-radius:4px}.backLink{top:32px;left:16px}}
