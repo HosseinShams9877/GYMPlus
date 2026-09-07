@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { handleUnauthorized } from "@/lib/auth-session";
 import { formatPersianDate as formatApiPersianDate, dateInputProps, todayApiDate } from "@/lib/persian-date";
+import { ProgramWorkspace } from "./coach/program/components/ProgramWorkspace";
 
 import styles from "./coach-dashboard.module.css";
 
@@ -25,6 +26,7 @@ type IconName =
   | "edit"
   | "enter"
   | "filter"
+  | "food"
   | "grid"
   | "help"
   | "home"
@@ -312,7 +314,7 @@ const pageConfig: Record<PageKey, { title: string; href: string; icon: IconName 
   students: { title: "شاگردان من", href: "/students", icon: "students" },
   actions: { title: "اقدامات", href: "/actions", icon: "calendar" },
   workout: { title: "برنامه تمرینی", href: "/workout-program", icon: "training" },
-  nutrition: { title: "برنامه غذایی", href: "/nutrition-program", icon: "training" },
+  nutrition: { title: "برنامه غذایی", href: "/nutrition-program", icon: "food" },
   services: { title: "خدمات", href: "/services", icon: "grid" },
   financial: { title: "مالی", href: "/financial", icon: "money" },
   income: { title: "گزارش درآمد", href: "/income-report", icon: "chart" },
@@ -325,6 +327,7 @@ const navOrder: PageKey[] = [
   "students",
   "actions",
   "workout",
+  "nutrition",
   "services",
   "financial",
   "income",
@@ -394,6 +397,7 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     edit: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></>,
     enter: <><path d="M20 5v5a4 4 0 0 1-4 4H5"/><path d="m9 10-4 4 4 4"/></>,
     filter: <><path d="M4 6h16M7 12h10M10 18h4" /></>,
+    food: <><path d="M4 3v8a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4V3M8 15v6M20 3c-2 1-3 3-3 6s1 5 3 5" /><path d="M17 3v18" /></>,
     grid: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
     help: <><circle cx="12" cy="12" r="9" /><path d="M9.7 9a2.4 2.4 0 1 1 3.1 2.3c-.8.3-.8 1-.8 1.7M12 17h.01" /></>,
     home: <><path d="m3 10 9-7 9 7" /><path d="M5 9v11h14V9" /></>,
@@ -894,7 +898,16 @@ export function CoachDashboard({ page = "dashboard" }: { page?: PageKey }) {
             <Icon name="menu" />
           </button>
         </div>
-        <button className={styles.newStudent} onClick={() => setModal(activePage === "services" ? "service" : activePage === "workout" || activePage === "nutrition" ? "workout" : "student")}>
+        <button
+          className={styles.newStudent}
+          onClick={() => {
+            if (activePage === "workout" || activePage === "nutrition") {
+              window.dispatchEvent(new CustomEvent("gymplus:program-new", { detail: { domain: activePage } }));
+            } else {
+              setModal(activePage === "services" ? "service" : "student");
+            }
+          }}
+        >
           <Icon name="plus" />
           <span>{activePage === "services" ? "سرویس جدید" : activePage === "workout" || activePage === "nutrition" ? "برنامه جدید" : "شاگرد جدید"}</span>
         </button>
@@ -997,7 +1010,17 @@ export function CoachDashboard({ page = "dashboard" }: { page?: PageKey }) {
             <span>{pageConfig[key].title.replace("مربی", "")}</span>
           </Link>
         ))}
-        <button className={styles.floatingAdd} aria-label={activePage === "services" ? "ساخت سرویس جدید" : activePage === "workout" || activePage === "nutrition" ? "ساخت برنامه جدید" : "ثبت شاگرد جدید"} onClick={() => setModal(activePage === "services" ? "service" : activePage === "workout" || activePage === "nutrition" ? "workout" : "student")}>
+        <button
+          className={styles.floatingAdd}
+          aria-label={activePage === "services" ? "ساخت سرویس جدید" : activePage === "workout" || activePage === "nutrition" ? "ساخت برنامه جدید" : "ثبت شاگرد جدید"}
+          onClick={() => {
+            if (activePage === "workout" || activePage === "nutrition") {
+              window.dispatchEvent(new CustomEvent("gymplus:program-new", { detail: { domain: activePage } }));
+            } else {
+              setModal(activePage === "services" ? "service" : "student");
+            }
+          }}
+        >
           <Icon name="plus" size={30} />
         </button>
         {(["workout", "services"] as PageKey[]).map((key) => (
@@ -1130,10 +1153,10 @@ function PageContent({
     return <ActionsPage tasks={data.tasks} openModal={openModal} onChanged={data.reload} />;
   }
   if (page === "workout") {
-    return <WorkoutPage plans={data.workoutPlans} nutritionPlans={data.nutritionPlans} athletes={data.athletes} openModal={openModal} onChanged={data.reload} />;
+    return <ProgramWorkspace kind="workout" />;
   }
   if (page === "nutrition") {
-    return <WorkoutPage plans={data.workoutPlans} nutritionPlans={data.nutritionPlans} athletes={data.athletes} openModal={openModal} onChanged={data.reload} initialTab="nutrition" />;
+    return <ProgramWorkspace kind="nutrition" />;
   }
   if (page === "services") {
     return <ServicesPage services={data.services} categories={data.categories} athletes={data.athletes} onChanged={data.reload} />;

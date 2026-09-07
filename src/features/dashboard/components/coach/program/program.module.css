@@ -1,0 +1,3528 @@
+/* =============================================================
+   GymPlus+ Coach — program module styles (workout + nutrition)
+   Theme tokens mirror coach-dashboard.module.css.
+   Scope: every rule lives under .prmWs so nothing leaks outside.
+   RTL: dir="rtl" on containers; logical props where available.
+   ============================================================= */
+
+.prmWs {
+  --co-orange: #e85d2a;
+  --co-orangeDark: #d4521f;
+  --co-orangeSoft: #fdeee8;
+  --co-green: #168a68;
+  --co-greenDark: #0f6e52;
+  --co-greenSoft: #e5f4ef;
+  --co-ink: #20232b;
+  --co-muted: #667085;
+  --co-line: #e3e6eb;
+  --co-soft: #f5f6f8;
+  --co-blue: #2f6fde;
+  --co-blueSoft: #e9f0fe;
+  --co-red: #d6473f;
+  --co-redSoft: #fdeceb;
+  --co-yellow: #c98708;
+  --co-yellowSoft: #faf1dc;
+  --co-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 10px 28px -14px rgba(16, 24, 40, 0.22);
+  --co-shadowLg: 0 24px 60px -20px rgba(16, 24, 40, 0.4);
+  --co-rSm: 10px;
+  --co-rMd: 14px;
+
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 4px;
+  color: var(--co-ink);
+  font-size: 14px;
+  line-height: 1.7;
+  direction: rtl;
+}
+
+.prmWs *,
+.prmWs *::before,
+.prmWs *::after {
+  box-sizing: border-box;
+}
+
+.prmWs button {
+  font: inherit;
+  color: inherit;
+}
+
+.prmWs input,
+.prmWs select,
+.prmWs textarea {
+  font: inherit;
+  color: var(--co-ink);
+}
+
+.prmWs input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.prmWs input[type="number"]::-webkit-outer-spin-button,
+.prmWs input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.prmWs h2,
+.prmWs h3 {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.prmWs :is(h2, h3) + small {
+  display: block;
+}
+
+/* ---------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------- */
+
+.prmBtn,
+.prmBtnPrimary,
+.prmBtnDanger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: var(--co-rSm);
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.prmBtn {
+  background: #fff;
+  border-color: var(--co-line);
+  color: var(--co-ink);
+}
+
+.prmBtn:hover:not(:disabled) {
+  background: var(--co-soft);
+  border-color: #d3d8df;
+}
+
+.prmBtnPrimary {
+  background: var(--co-orange);
+  color: #fff;
+}
+
+.prmBtnPrimary:hover:not(:disabled) {
+  background: var(--co-orangeDark);
+}
+
+.prmBtnDanger {
+  background: var(--co-redSoft);
+  color: var(--co-red);
+  border-color: transparent;
+}
+
+.prmBtnDanger:hover:not(:disabled) {
+  background: #f8dcd9;
+}
+
+.prmBtn:disabled,
+.prmBtnPrimary:disabled,
+.prmBtnDanger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.prmBtn:focus-visible,
+.prmBtnPrimary:focus-visible,
+.prmBtnDanger:focus-visible,
+.prmIconBtn:focus-visible {
+  outline: 2px solid rgba(232, 93, 42, 0.5);
+  outline-offset: 2px;
+}
+
+.prmIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--co-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.prmIconBtn:hover:not(:disabled) {
+  background: var(--co-soft);
+  color: var(--co-ink);
+}
+
+.prmIconBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------
+   Spinner
+   --------------------------------------------------------------- */
+
+.prmSpinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 2px solid rgba(16, 24, 40, 0.14);
+  border-top-color: var(--co-orange);
+  animation: prmSpin 0.7s linear infinite;
+}
+
+@keyframes prmSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Badge + tones
+   --------------------------------------------------------------- */
+
+.prmBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.prmBadgeMuted {
+  opacity: 0.72;
+}
+
+.prmBadgeGray {
+  background: #eef0f3;
+  color: #5a6472;
+}
+
+.prmBadgeOrange {
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+}
+
+.prmBadgeGreen {
+  background: var(--co-greenSoft);
+  color: var(--co-green);
+}
+
+.prmBadgeBlue {
+  background: var(--co-blueSoft);
+  color: var(--co-blue);
+}
+
+.prmBadgeRed {
+  background: var(--co-redSoft);
+  color: var(--co-red);
+}
+
+.prmBadgeYellow {
+  background: var(--co-yellowSoft);
+  color: var(--co-yellow);
+}
+
+/* ---------------------------------------------------------------
+   Notice + tones
+   --------------------------------------------------------------- */
+
+.prmNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 12px;
+  border-radius: var(--co-rSm);
+  font-size: 12.5px;
+  line-height: 1.75;
+}
+
+.prmNotice svg {
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+
+.prmNoticeGray {
+  background: #f0f2f5;
+  color: #5a6472;
+}
+
+.prmNoticeGreen {
+  background: var(--co-greenSoft);
+  color: var(--co-green);
+}
+
+.prmNoticeOrange {
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+}
+
+.prmNoticeRed {
+  background: var(--co-redSoft);
+  color: var(--co-red);
+}
+
+.prmNoticeBlue {
+  background: var(--co-blueSoft);
+  color: var(--co-blue);
+}
+
+.prmNoticeYellow {
+  background: var(--co-yellowSoft);
+  color: var(--co-yellow);
+}
+
+/* ---------------------------------------------------------------
+   Empty state
+   --------------------------------------------------------------- */
+
+.prmEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 42px 20px;
+  text-align: center;
+  color: var(--co-muted);
+}
+
+.prmEmptyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 4px;
+  border-radius: 18px;
+  background: var(--co-soft);
+  color: #9aa3af;
+}
+
+.prmEmpty b {
+  font-size: 14.5px;
+  color: var(--co-ink);
+}
+
+.prmEmpty p {
+  margin: 0 0 6px;
+  max-width: 360px;
+  font-size: 12.5px;
+}
+
+/* ---------------------------------------------------------------
+   Toggle switch
+   --------------------------------------------------------------- */
+
+.prmSwitch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 38px;
+  height: 22px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #d8dde3;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.prmSwitch i {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.25);
+  transition: transform 0.18s ease;
+}
+
+.prmSwitchOn {
+  background: var(--co-orange);
+}
+
+.prmSwitchOn i {
+  transform: translateX(-16px);
+}
+
+.prmWs[dir="rtl"] .prmSwitchOn i,
+[dir="rtl"] .prmSwitchOn i {
+  transform: translateX(16px);
+}
+
+.prmSwitchDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------
+   Inputs, fields, search, mini input
+   --------------------------------------------------------------- */
+
+.prmInput {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 11px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: #fff;
+  font-size: 13.5px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmInput:focus {
+  outline: none;
+  border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.13);
+}
+
+.prmInput::placeholder {
+  color: #a3abb6;
+}
+
+.prmWs textarea.prmInput {
+  resize: vertical;
+}
+
+.prmMiniInput {
+  width: 84px;
+  min-height: 34px;
+  padding: 5px 9px;
+  border: 1px solid var(--co-line);
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+  text-align: center;
+}
+
+.prmMiniInput:focus {
+  outline: none;
+  border-color: var(--co-orange);
+}
+
+.prmMiniInput:disabled {
+  background: var(--co-soft);
+  color: var(--co-muted);
+  cursor: not-allowed;
+}
+
+.prmField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--co-muted);
+}
+
+.prmField > span {
+  font-weight: 600;
+  color: #4a5464;
+}
+
+.prmField small {
+  font-size: 11.5px;
+}
+
+.prmSearch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: #fff;
+  color: #9aa3af;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmSearch:focus-within {
+  border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.12);
+}
+
+.prmSearch input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+}
+
+.prmSearch button {
+  display: inline-flex;
+  border: none;
+  background: transparent;
+  padding: 2px;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* ===============================================================
+   Modal shell + confirm + safe-delete
+   =============================================================== */
+
+.prmOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(16, 24, 40, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.prmModal {
+  width: 100%;
+  max-width: 480px;
+  max-height: min(86vh, 820px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--co-shadowLg);
+  overflow: hidden;
+}
+
+.prmModalSmall {
+  max-width: 440px;
+}
+
+.prmModalWide {
+  max-width: 640px;
+}
+
+.prmModalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--co-line);
+}
+
+.prmModalHead h2 {
+  font-size: 16px;
+}
+
+.prmModalHead small {
+  color: var(--co-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.prmModalHead > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--co-muted);
+  cursor: pointer;
+}
+
+.prmModalHead > button:hover {
+  background: var(--co-soft);
+  color: var(--co-ink);
+}
+
+.prmConfirmBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.prmConfirmIconOrange,
+.prmConfirmIconRed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  align-self: center;
+  border-radius: 50%;
+}
+
+.prmConfirmIconOrange {
+  background: var(--co-orangeSoft);
+  color: var(--co-orange);
+}
+
+.prmConfirmIconRed {
+  background: var(--co-redSoft);
+  color: var(--co-red);
+}
+
+.prmConfirmText {
+  font-size: 13.5px;
+  color: #46505f;
+  text-align: center;
+}
+
+.prmConfirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.prmConfirmActions .prmBtn,
+.prmConfirmActions .prmBtnPrimary,
+.prmConfirmActions .prmBtnDanger {
+  min-width: 108px;
+}
+
+/* safe delete */
+.prmSdBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.prmSdTarget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: var(--co-soft);
+}
+
+.prmSdTarget > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.prmSdTarget b {
+  font-size: 13.5px;
+}
+
+.prmSdTarget small {
+  color: var(--co-muted);
+  font-size: 11.5px;
+}
+
+.prmSdTargetIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: var(--co-redSoft);
+  color: var(--co-red);
+}
+
+.prmSdLead {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--co-muted);
+}
+
+.prmSdOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prmSdOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: #fff;
+  text-align: right;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.prmSdOption:hover:not(:disabled) {
+  border-color: #c9d0d8;
+}
+
+.prmSdOption:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prmSdOptionActive {
+  border-color: var(--co-orange);
+  background: var(--co-orangeSoft);
+}
+
+.prmSdOption > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+}
+
+.prmSdOption b {
+  font-size: 13px;
+}
+
+.prmSdOption small {
+  color: var(--co-muted);
+  font-size: 11.5px;
+}
+
+.prmSdRadio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  border: 2px solid #c6cdd5;
+  border-radius: 50%;
+  transition: border-color 0.15s ease;
+}
+
+.prmSdOptionActive .prmSdRadio {
+  border-color: var(--co-orange);
+}
+
+.prmSdRadio i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--co-orange);
+}
+
+.prmSdMove {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prmSdMove > span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4a5464;
+}
+
+/* ===============================================================
+   Drag reorder
+   =============================================================== */
+
+.prmReorder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prmReorderRow {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.prmGrip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: #c3cad3;
+  cursor: grab;
+}
+
+.prmDragging {
+  opacity: 0.35;
+  box-shadow: var(--co-shadowLg);
+}
+
+.prmDragOver {
+  outline: 2px dashed var(--co-orange);
+  outline-offset: -2px;
+  border-radius: 12px;
+}
+
+.prmDragSource {
+  opacity: 0.4;
+}
+
+/* ===============================================================
+   Workspace chrome (plans / bank / settings tabs)
+   =============================================================== */
+
+.prmWsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 6px 10px 12px;
+}
+
+.prmWsTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.prmWsTitle h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.prmWsTitle small {
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+.prmWsActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prmWsTabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border-radius: 13px;
+  background: #eef0f3;
+}
+
+.prmWsTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--co-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmWsTab:hover {
+  color: var(--co-ink);
+}
+
+.prmWsTabActive {
+  background: #fff;
+  color: var(--co-orangeDark);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+}
+
+.prmWsOffline {
+  margin: 4px 2px 14px;
+}
+
+.prmWsLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 30px;
+  color: var(--co-muted);
+  font-size: 13px;
+}
+
+.prmWsError {
+  margin: 0 2px 12px;
+  padding: 11px 14px;
+  border-radius: var(--co-rSm);
+  background: var(--co-redSoft);
+  color: var(--co-red);
+  font-size: 13px;
+}
+
+/* offline banner primitive */
+.prmOffline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 11px 14px;
+  border-radius: var(--co-rSm);
+  background: var(--co-yellowSoft);
+  color: var(--co-yellow);
+  font-size: 13px;
+}
+
+.prmOffline > svg {
+  flex: 0 0 auto;
+}
+
+.prmOffline span {
+  flex: 1;
+  min-width: 200px;
+}
+
+.prmOffline button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--co-yellow);
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.prmOffline button:disabled {
+  opacity: 0.6;
+}
+
+/* ===============================================================
+   Generic panel (settings sections, bank, templates)
+   =============================================================== */
+
+.prmPanel {
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rMd);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.prmPanelHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 13px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.prmPanelHead > span:first-child {
+  flex: 1;
+  min-width: 220px;
+}
+
+.prmPanelHead h2 {
+  font-size: 15.5px;
+  font-weight: 800;
+}
+
+.prmPanelHead small {
+  color: var(--co-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* ===============================================================
+   Settings engine
+   =============================================================== */
+
+.prmSettings {
+  display: flex;
+  flex-direction: column;
+}
+
+.prmSettingsHint {
+  margin: 10px 2px 2px;
+  color: var(--co-muted);
+  font-size: 11.5px;
+}
+
+.prmSectionEmpty {
+  padding: 13px;
+  border-radius: var(--co-rSm);
+  background: var(--co-soft);
+  color: var(--co-muted);
+  text-align: center;
+  font-size: 12.5px;
+}
+
+/* add-many textarea + submit */
+.prmAddMany {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.prmAddManyInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  padding: 8px 11px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: #fff;
+  font-size: 13px;
+  resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmAddManyInput:focus {
+  outline: none;
+  border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.12);
+}
+
+.prmAddMany .prmBtnPrimary {
+  flex: 0 0 auto;
+}
+
+/* generic rows — flat divider list inside settings */
+.prmRow {
+  display: flex;
+  align-items: center;
+  gap: 8px 10px;
+  flex-wrap: wrap;
+  padding: 9px 2px;
+  border-bottom: 1px dashed #e9edf1;
+}
+
+.prmRow:last-child {
+  border-bottom: 0;
+}
+
+.prmRowName {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 150px;
+}
+
+.prmRowName b {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.prmRowActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.prmGramsEditor {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--co-muted);
+}
+
+.prmGramsEditor > span {
+  font-weight: 600;
+}
+
+/* structure editor rows (inside ReorderableList) */
+.prmStructRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--co-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.prmReorderRow > .prmGrip {
+  align-self: center;
+}
+
+.prmStructIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.prmStructMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.prmStructMealRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 220px);
+  gap: 8px;
+}
+
+.prmStructComposition {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--co-muted);
+}
+
+/* chips (goals, muscle tags, filters) */
+.prmChipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.prmChip,
+.prmChipActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.prmChip {
+  border: 1px solid #dde1e6;
+  background: #fff;
+  color: #4a5464;
+}
+
+.prmChip:hover {
+  border-color: #c3cad3;
+  background: var(--co-soft);
+}
+
+.prmChipActive {
+  border-color: transparent;
+  background: var(--co-orange);
+  color: #fff;
+}
+
+/* segmented control that holds the mode chips (builder top) */
+.prmModeSeg {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  padding: 4px;
+  border-radius: 12px;
+  background: #eef0f3;
+}
+
+.prmModeChip,
+.prmModeChipActive {
+  border: none;
+  border-radius: 9px;
+  padding: 7px 15px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--co-muted);
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmModeChip:hover {
+  color: var(--co-ink);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.prmModeChipActive {
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.16);
+}
+
+.prmModeChipActive[data-mode="volume"] {
+  background: var(--co-orange);
+}
+
+.prmModeChipActive[data-mode="cut"] {
+  background: var(--co-green);
+}
+
+.prmModeChipActive[data-mode="neutral"],
+.prmModeChipActive[data-mode=""] {
+  background: #5a6472;
+}
+
+/* ===============================================================
+   Template rows (workspace plans view)
+   =============================================================== */
+
+.prmTemplateList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prmTemplateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 11px 13px;
+  border: 1px solid var(--co-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.prmTemplateBody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.prmTemplateBody b {
+  font-size: 13.5px;
+}
+
+.prmTemplateMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.prmTemplateActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+/* ===============================================================
+   Saved program cards (ProgramList)
+   =============================================================== */
+
+.prmList {
+  margin-top: 4px;
+}
+
+.prmListFilters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.prmListCount {
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+.prmListEmpty {
+  padding-top: 8px;
+}
+
+.prmCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.prmCard {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 16px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rMd);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.prmCard:hover {
+  box-shadow: var(--co-shadow);
+  transform: translateY(-1px);
+}
+
+.prmCardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.prmCardTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prmCardTitle > b {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.prmCardBadges {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.prmCardProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prmCardProgressText {
+  color: var(--co-muted);
+  font-size: 12px;
+}
+
+.prmProgressTrack {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: #e9edf1;
+  overflow: hidden;
+}
+
+.prmProgressTrack i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--co-orange), #f28c4b);
+}
+
+.prmCardActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+/* ===============================================================
+   Bank manager (ProgramBank)
+   =============================================================== */
+
+.prmBankFilters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 4px 0 10px;
+}
+
+.prmBankFilters .prmSearch {
+  flex: 1 1 220px;
+  max-width: 380px;
+}
+
+.prmBankTabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+/* quick entry */
+.prmQuickEntry {
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border: 1px solid #e7eaf0;
+  border-radius: var(--co-rMd);
+  background: linear-gradient(180deg, #fdfcfb, #f8f9fb);
+}
+
+.prmQuickSettings {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.prmQuickField {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 190px;
+  font-size: 12px;
+  color: var(--co-muted);
+}
+
+.prmQuickField > span {
+  font-weight: 600;
+}
+
+.prmQuickAdd {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.prmQuickArea {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  padding: 8px 11px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: #fff;
+  font-size: 13px;
+  resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmQuickArea:focus {
+  outline: none;
+  border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.12);
+}
+
+.prmQuickAdd .prmBtnPrimary {
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+
+.prmQuickNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 2px 0;
+  color: var(--co-muted);
+  font-size: 11.5px;
+}
+
+.prmQuickNote b {
+  color: var(--co-ink);
+}
+
+.prmQuickNote svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--co-yellow);
+}
+
+/* session strip */
+.prmSessionStrip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+  border: 1px solid #cde9de;
+  border-radius: 12px;
+  background: var(--co-greenSoft);
+}
+
+.prmSessionTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--co-green);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.prmSessionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+
+.prmSessionItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 9px 2px 3px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.prmSessionItem b {
+  font-size: 12px;
+  font-weight: 600;
+  padding-inline-end: 4px;
+}
+
+.prmSessionItem .prmIconBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+.prmSessionItem .prmIconBtn:hover {
+  background: var(--co-redSoft);
+  color: var(--co-red);
+}
+
+/* bulk bar */
+.prmBulkBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid #f3d7c8;
+  border-radius: 12px;
+  background: #fffaf6;
+}
+
+.prmBulkCount {
+  color: var(--co-muted);
+  font-size: 12.5px;
+  margin-inline-end: auto;
+}
+
+.prmBulkCount b {
+  color: var(--co-orangeDark);
+  font-size: 15px;
+}
+
+.prmBulkMove {
+  min-width: 200px;
+  flex: 0 1 auto;
+}
+
+.prmBulkBar .prmBtn,
+.prmBulkBar .prmBtnDanger {
+  padding: 6px 11px;
+  font-size: 12.5px;
+}
+
+/* table + rows */
+.prmBankTable {
+  --bank-cols: 26px minmax(190px, 1.7fr) minmax(110px, 0.75fr) minmax(88px, 0.5fr) minmax(150px, 1.15fr) auto;
+  overflow-x: auto;
+  margin-top: 6px;
+}
+
+.prmBankHead,
+.prmBankRow {
+  display: grid;
+  grid-template-columns: var(--bank-cols);
+  column-gap: 12px;
+  align-items: center;
+  min-width: 760px;
+  padding-inline: 12px;
+}
+
+.prmBankHead {
+  padding-block: 7px;
+  border-bottom: 1px solid var(--co-line);
+  color: var(--co-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.prmBankRow {
+  position: relative;
+  padding-block: 9px;
+  border-bottom: 1px solid #eef0f3;
+  transition: background-color 0.15s ease;
+}
+
+.prmBankRow:hover {
+  background: #fafbfc;
+}
+
+.prmBankRowDisabled {
+  opacity: 0.6;
+}
+
+.prmBankRowDisabled .prmBankName b {
+  text-decoration: line-through;
+  color: var(--co-muted);
+}
+
+.prmBankRowEditing {
+  background: #fffaf5;
+}
+
+.prmBankName {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.prmBankName b {
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmBankName small {
+  color: var(--co-muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmBankName .prmBadge {
+  align-self: flex-start;
+}
+
+.prmBankMeta {
+  color: var(--co-muted);
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmBankUnit {
+  color: var(--co-ink);
+  font-size: 12.5px;
+}
+
+.prmBankGoals {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.prmBankActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.prmBankActions .prmIconBtn {
+  width: 28px;
+  height: 28px;
+}
+
+.prmCheckbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1.5px solid #cdd3da;
+  border-radius: 7px;
+  background: #fff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.prmCheckbox:hover {
+  border-color: var(--co-orange);
+}
+
+.prmCheckbox:has(svg) {
+  background: var(--co-orange);
+  border-color: var(--co-orange);
+}
+
+.prmBankEmpty {
+  min-width: 100%;
+}
+
+/* inline edit panel (extra grid row spanning all columns) */
+.prmBankEdit {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px 14px;
+  margin-top: 10px;
+  padding: 13px 14px;
+  border-radius: var(--co-rSm);
+  background: #fff;
+  border: 1px solid #f0dfd2;
+}
+
+.prmBankEditField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--co-muted);
+  min-width: 0;
+}
+
+.prmBankEditField > span:first-child {
+  font-weight: 600;
+  color: #4a5464;
+}
+
+.prmBankEditField .prmChipRow {
+  gap: 5px;
+}
+
+.prmBankEditField .prmMiniInput {
+  width: 110px;
+}
+
+/* ===============================================================
+   Builder — top bar
+   =============================================================== */
+
+.prmBuilder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prmBuilderTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 6px 4px 2px;
+}
+
+.prmBuilderTitle {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.prmBuilderTitle .prmInput {
+  min-height: 42px;
+  padding: 8px 13px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 11px;
+}
+
+.prmBuilderTitle small {
+  color: var(--co-muted);
+  font-size: 11.5px;
+  padding-inline-start: 2px;
+}
+
+.prmBuilderActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prmBuilderError {
+  margin: 2px 4px;
+}
+
+/* ===============================================================
+   Builder — 3-column grid (desktop)
+   =============================================================== */
+
+.prmBuilderGrid {
+  display: grid;
+  grid-template-columns: minmax(245px, 295px) minmax(0, 1fr) minmax(280px, 330px);
+  gap: 12px;
+  height: calc(100dvh - 208px);
+  min-height: 520px;
+  padding: 4px 4px 8px;
+  overflow: hidden;
+}
+
+.prmBuilderRail,
+.prmBuilderCenter,
+.prmBuilderBank {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rMd);
+  background: #fff;
+}
+
+/* --- structure rail --- */
+
+.prmRailList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.prmRailItem {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.prmRailItem:hover {
+  background: var(--co-soft);
+}
+
+.prmRailActive {
+  background: var(--co-orangeSoft);
+  border-color: #f5cdbd;
+}
+
+.prmRailMain {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 9px;
+  border: none;
+  background: transparent;
+  text-align: right;
+  cursor: pointer;
+}
+
+.prmRailIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--co-line);
+  color: var(--co-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prmRailActive .prmRailIndex {
+  background: var(--co-orange);
+  border-color: var(--co-orange);
+  color: #fff;
+}
+
+.prmRailBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.prmRailBody b {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmRailBody small {
+  color: var(--co-muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmRailMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.prmRailActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 0 0 auto;
+}
+
+.prmRailActions .prmIconBtn {
+  width: 26px;
+  height: 26px;
+}
+
+.prmRailEmpty {
+  padding: 18px 10px;
+  text-align: center;
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+.prmRailAdd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 4px 10px 10px;
+  padding: 10px;
+  border: 1px dashed #cfd6dd;
+  border-radius: 12px;
+  background: var(--co-soft);
+  color: var(--co-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.prmRailAdd:hover {
+  color: var(--co-orangeDark);
+  border-color: var(--co-orange);
+  background: var(--co-orangeSoft);
+}
+
+/* --- center column --- */
+
+.prmBuilderCenter {
+  background: var(--co-soft);
+}
+
+.prmColHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+  padding: 13px 15px 11px;
+  border-bottom: 1px solid #e6e9ee;
+  background: #fff;
+  border-radius: var(--co-rMd) var(--co-rMd) 0 0;
+}
+
+.prmColHead > span:first-child {
+  flex: 1;
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.prmColHead h3 {
+  font-size: 15.5px;
+  font-weight: 800;
+}
+
+.prmColHead small {
+  color: var(--co-muted);
+  font-size: 12px;
+}
+
+.prmColHeadActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.prmRows {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.prmBuilderCenter .prmRow {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.prmRowMain {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px 12px;
+  border: 1px solid #e8ebf0;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmRowMain:focus-within {
+  border-color: #f0c2ae;
+}
+
+.prmBRowFields {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prmBRowIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  align-self: center;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  background: var(--co-soft);
+  color: var(--co-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prmBRowFields .prmBRowName {
+  flex: 1 1 190px;
+  min-width: 150px;
+  width: auto;
+}
+
+.prmBRowFields select.prmInput {
+  width: 100px;
+  flex: 0 0 auto;
+}
+
+.prmBRowFields input.prmInput[type="text"] {
+  min-width: 0;
+}
+
+.prmBRowNum {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--co-muted);
+}
+
+.prmBRowNum input,
+.prmBRowRest input {
+  width: 72px;
+  height: 36px;
+  padding: 5px 6px;
+  border: 1px solid var(--co-line);
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+  text-align: center;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmBRowNum input:focus,
+.prmBRowRest input:focus,
+.prmBRowKcal input:focus {
+  outline: none;
+  border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.1);
+}
+
+.prmBRowRest {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--co-muted);
+}
+
+.prmBRowRest input {
+  width: 62px;
+}
+
+.prmBRowRest em,
+.prmBRowKcal em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--co-muted);
+}
+
+.prmBRowKcal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 3px 9px 3px 5px;
+  border-radius: 999px;
+  background: var(--co-soft);
+  font-size: 11px;
+  color: var(--co-muted);
+}
+
+.prmBRowKcal span {
+  white-space: nowrap;
+}
+
+.prmBRowKcal input {
+  width: 58px;
+  height: 30px;
+  padding: 4px 5px;
+  border: 1px solid var(--co-line);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.prmBRowNotes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.prmBRowNote {
+  min-width: 0;
+  height: 34px;
+  padding: 6px 10px;
+  border: 1px dashed transparent;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 12.5px;
+  color: var(--co-ink);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.prmBRowNote::placeholder {
+  color: #aab2bd;
+}
+
+.prmBRowNote:hover {
+  background: var(--co-soft);
+}
+
+.prmBRowNote:focus {
+  outline: none;
+  border-color: var(--co-orange);
+  background: #fff;
+}
+
+.prmRowsEmpty {
+  padding: 16px;
+  text-align: center;
+  border: 1px dashed #cfd6dd;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+/* --- bank pick (desktop third column) --- */
+
+.prmBankPickHead {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 0 0 auto;
+  padding: 13px 14px 11px;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.prmBankPickHead h3 {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.prmBankPickHead small {
+  color: var(--co-muted);
+  font-size: 11.5px;
+  margin-top: -5px;
+}
+
+.prmBankPickHead .prmSearch {
+  min-height: 36px;
+}
+
+.prmBankPickHead .prmBankTabs {
+  gap: 4px;
+}
+
+.prmBankPickList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--co-soft);
+  border-radius: 0 0 var(--co-rMd) var(--co-rMd);
+}
+
+.prmBankPick {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid #eceff3;
+  border-radius: 11px;
+  background: #fff;
+  text-align: right;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.prmBankPick:hover {
+  border-color: var(--co-orange);
+  box-shadow: 0 4px 14px -8px rgba(232, 93, 42, 0.45);
+  transform: translateY(-1px);
+}
+
+.prmBankPickBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.prmBankPickBody b {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmBankPickBody small {
+  color: var(--co-muted);
+  font-size: 11px;
+}
+
+.prmBankPickUnit {
+  flex: 0 0 auto;
+  color: var(--co-muted);
+  font-size: 11.5px;
+}
+
+.prmBankPickAdd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--co-orangeSoft);
+  color: var(--co-orange);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.prmBankPick:hover .prmBankPickAdd {
+  opacity: 1;
+}
+
+.prmBankPickEmpty {
+  padding: 22px 12px;
+  text-align: center;
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+/* bank sheet close — only used when the bank becomes a bottom sheet */
+.prmBankSheetClose {
+  display: none;
+}
+
+/* sheet overlay behind the mobile bottom-sheet bank */
+.prmSheetOverlay {
+  display: none;
+}
+
+/* ===============================================================
+   Preview + send modal
+   =============================================================== */
+
+.prmPreviewBody {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+
+.prmPreviewMeta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.prmPreviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prmPreviewRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--co-line);
+  border-radius: 11px;
+  background: #fff;
+}
+
+.prmPreviewIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prmPreviewMain {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.prmPreviewMain b {
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmPreviewMain small {
+  color: var(--co-muted);
+  font-size: 11.5px;
+}
+
+.prmSendFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 12px;
+  align-items: end;
+}
+
+.prmPreviewActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 13px 18px;
+  border-top: 1px solid var(--co-line);
+}
+
+/* ===============================================================
+   Responsive — collapse builder, bank becomes bottom sheet
+   =============================================================== */
+
+@media (max-width: 1240px) {
+  .prmBuilderGrid {
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(260px, 300px);
+  }
+}
+
+@media (max-width: 1080px) {
+  /* the builder stacks; internal scrolling yields to the page */
+  .prmBuilderGrid {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    gap: 12px;
+    padding-inline: 0;
+  }
+
+  .prmBuilderRail {
+    border-radius: var(--co-rMd);
+  }
+
+  /* rail becomes a horizontal strip of day/meal pills */
+  .prmRailList {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: stretch;
+    padding: 10px;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
+  .prmRailItem {
+    flex: 0 0 auto;
+    width: 216px;
+  }
+
+  .prmRailItem .prmRailActions {
+    flex-direction: row;
+  }
+
+  .prmRailAdd {
+    margin-inline: 10px;
+    flex: 0 0 auto;
+  }
+
+  .prmRows {
+    overflow: visible;
+    flex: 0 0 auto;
+  }
+
+  /* bank: fixed bottom sheet (closed by default, slide up when open) */
+  .prmBuilderBank {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    z-index: 70;
+    max-height: 86vh;
+    border-radius: 18px 18px 0 0;
+    box-shadow: var(--co-shadowLg);
+    transform: translateY(105%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.28s ease, opacity 0.2s ease, visibility 0.28s ease;
+  }
+
+  .prmBuilderBankOpen {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .prmBuilderBankOpen .prmBankPickHead {
+    padding-top: 46px;
+    padding-bottom: 12px;
+  }
+
+  .prmBankSheetClose {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    inset-inline-start: 12px;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 9px;
+    background: var(--co-soft);
+    color: var(--co-muted);
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .prmSheetOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    background: rgba(16, 24, 40, 0.45);
+  }
+}
+
+@media (max-width: 720px) {
+  .prmWs {
+    padding: 2px;
+  }
+
+  .prmWsHead {
+    padding-inline: 4px;
+  }
+
+  .prmWsTitle h2 {
+    font-size: 18px;
+  }
+
+  .prmPanel {
+    padding: 13px 14px;
+  }
+
+  .prmBankFilters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prmBankFilters .prmSearch {
+    max-width: none;
+  }
+
+  .prmQuickAdd {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prmQuickAdd .prmBtnPrimary {
+    align-self: stretch;
+  }
+
+  .prmAddMany {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prmAddMany .prmBtnPrimary {
+    align-self: flex-start;
+  }
+
+  .prmStructMealRow {
+    grid-template-columns: 1fr;
+  }
+
+  .prmCards {
+    grid-template-columns: 1fr;
+  }
+
+  .prmBRowNotes {
+    grid-template-columns: 1fr;
+  }
+
+  .prmSendFields {
+    grid-template-columns: 1fr;
+  }
+
+  .prmTemplateRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .prmBuilderTop {
+    align-items: stretch;
+  }
+
+  .prmModeSeg {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .prmBuilderActions {
+    justify-content: flex-end;
+  }
+
+  .prmBankEdit {
+    grid-template-columns: 1fr;
+  }
+
+  .prmModalHead {
+    padding-inline: 14px;
+  }
+
+  .prmPreviewBody {
+    padding-inline: 14px;
+  }
+
+  .prmSdOption {
+    padding-inline: 10px;
+  }
+
+  .prmBRowKcal {
+    flex-wrap: wrap;
+  }
+}
+
+/* ===============================================================
+   Food bank (NutritionFoodBank) — quick entry + pending + list
+   Meal-based categories, orange/green/gray only (no blue).
+   =============================================================== */
+
+/* quick entry form */
+.prmFoodQuick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prmFoodQuickGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 10px;
+}
+
+.prmFoodQuickGrid .prmQuickField {
+  min-width: 0;
+}
+
+.prmFoodNameAdd {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.prmFoodNameInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: #fff;
+  font-size: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmFoodNameInput:focus {
+  outline: none;
+  border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.12);
+}
+
+.prmFoodNameInput::placeholder {
+  color: #9aa3af;
+}
+
+.prmFoodNameAdd .prmBtnPrimary {
+  flex: 0 0 auto;
+}
+
+/* pending list (not yet saved) */
+.prmFoodPending {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e7eaf0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fdfcfb, #f8f9fb);
+}
+
+.prmFoodPendingHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.prmFoodPendingTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--co-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.prmFoodPendingTitle svg {
+  color: var(--co-green);
+}
+
+.prmFoodPendingEmpty {
+  margin: 0;
+  padding: 10px 4px;
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+.prmFoodPendingRows {
+  margin-top: 4px;
+}
+
+.prmFoodPendingRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 6px;
+  border-bottom: 1px dashed #e9edf1;
+}
+
+.prmFoodPendingRow:last-child {
+  border-bottom: 0;
+}
+
+.prmFoodPendingRowEditing {
+  background: #fffaf5;
+  border-radius: 10px;
+}
+
+.prmFoodPendingIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.prmFoodPendingMain {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.prmFoodPendingMain > b {
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prmFoodPendingMeta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.prmFoodPendingChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--co-soft);
+  color: var(--co-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.prmFoodPendingActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.prmFoodPendingEdit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #f0dfd2;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.prmFoodPendingFoot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eef0f3;
+}
+
+/* view-only list: filter rows */
+.prmFoodFilterRows {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 2px 0 10px;
+}
+
+.prmFoodFilterRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prmFoodFilterLabel {
+  color: var(--co-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  min-width: 34px;
+}
+
+/* 5-column table: Name | Category | Unit | Goal | Status (no checkbox) */
+.prmFoodTable {
+  --bank-cols: minmax(190px, 1.7fr) minmax(120px, 0.7fr) minmax(90px, 0.5fr) minmax(150px, 1.2fr) auto;
+}
+
+.prmFoodTable .prmBankHead,
+.prmFoodTable .prmBankRow {
+  min-width: 660px;
+}
+
+.prmFoodEditSave {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+@media (max-width: 720px) {
+  .prmFoodQuickGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .prmFoodNameAdd {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prmFoodNameAdd .prmBtnPrimary {
+    align-self: stretch;
+  }
+
+  .prmFoodPendingRow {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .prmFoodPendingActions {
+    grid-column: 2;
+    justify-content: flex-end;
+  }
+
+  .prmFoodPendingEdit {
+    grid-template-columns: 1fr;
+  }
+
+  .prmFoodFilterRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .prmFoodTable .prmBankRow {
+    min-width: 580px;
+  }
+}
+
+/* send-to-student note inside the workspace modal */
+.prmSendNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 9px 11px;
+  border: 1px solid var(--co-line);
+  border-radius: 10px;
+  background: var(--co-soft);
+  color: var(--co-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.prmSendNote svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--co-green);
+}
+
+/* ===============================================================
+   Refined program card (ProgramCard) · list tabs · create wizard
+   Orange/green/gray only — no blue. Mobile-first.
+   =============================================================== */
+
+/* ---- three list tabs: همه / شاگردان / برنامه‌های کلی ---- */
+.prmListTabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.prmListTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--co-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.prmListTab:hover:not(:disabled) {
+  color: var(--co-ink);
+  background: var(--co-soft);
+  border-color: var(--co-line);
+}
+
+.prmListTabActive,
+.prmListTabActive:hover:not(:disabled) {
+  color: #fff;
+  background: var(--co-orange);
+  border-color: var(--co-orange);
+  box-shadow: 0 6px 14px -6px rgba(232, 93, 42, 0.55);
+}
+
+.prmListTabCount {
+  min-width: 19px;
+  height: 19px;
+  padding-inline: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(32, 35, 43, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.prmListTabActive .prmListTabCount {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* ---- ghost (outline) button — «ساخت برنامه کلی» ---- */
+.prmBtnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #efbea7;
+  color: var(--co-orange);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prmBtnGhost:hover:not(:disabled) {
+  background: var(--co-orangeSoft);
+  border-color: var(--co-orange);
+}
+
+.prmBtnGhost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+/* ---- send-to-student dropdown ---- */
+.prmSendWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.prmCard2Menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+  z-index: 60;
+  min-width: 228px;
+  max-width: 290px;
+  max-height: 272px;
+  overflow: auto;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--co-line);
+  border-radius: 12px;
+  box-shadow: var(--co-shadowLg);
+}
+
+.prmCard2MenuHead {
+  display: block;
+  padding: 6px 9px 5px;
+  color: var(--co-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prmCard2Menu > button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--co-ink);
+  text-align: start;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.prmCard2Menu > button:hover {
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+}
+
+.prmCard2MenuEmpty {
+  display: block;
+  padding: 8px 9px;
+  color: var(--co-muted);
+  font-size: 12.5px;
+}
+
+/* initial-dot used for student avatars */
+.prmAthDot {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--co-orangeSoft);
+  color: var(--co-orange);
+  font-size: 12px;
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* ---- create dialogs (goal-only + student wizard) ---- */
+.prmWizBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 2px 0;
+}
+
+.prmWizHint {
+  margin: 0;
+  color: var(--co-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.prmWizStudents {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.prmWizStudent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--co-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--co-ink);
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.prmWizStudent:hover {
+  border-color: var(--co-orange);
+  box-shadow: 0 4px 12px -6px rgba(232, 93, 42, 0.35);
+}
+
+.prmWizStudent > svg {
+  flex: 0 0 auto;
+  color: var(--co-muted);
+}
+
+.prmWizStudent:hover > svg {
+  color: var(--co-orange);
+}
+
+.prmWizStudentBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.prmWizStudentBody b {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.prmWizStudentBody small {
+  color: var(--co-muted);
+  font-size: 12px;
+}
+
+.prmWizStudentIcon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--co-orangeSoft);
+  color: var(--co-orange);
+  font-style: normal;
+}
+
+.prmWizMethod {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.prmWizMethod > button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid var(--co-line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--co-ink);
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.prmWizMethod > button:hover {
+  border-color: var(--co-orange);
+  box-shadow: var(--co-shadow);
+  transform: translateY(-1px);
+}
+
+.prmWizMethodIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--co-orangeSoft);
+  color: var(--co-orange);
+  font-style: normal;
+}
+
+.prmWizMethod > button > span:last-child b {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.prmWizMethod > button > span:last-child small {
+  display: block;
+  margin-top: 3px;
+  color: var(--co-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.prmWizBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: var(--co-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prmWizBack svg {
+  transform: rotate(-90deg);
+}
+
+.prmWizBack:hover {
+  color: var(--co-orange);
+}
+
+.prmWizActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prmWizTemplate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 11px 12px;
+  border: 1px solid var(--co-line);
+  border-radius: 12px;
+  background: var(--co-soft);
+}
+
+.prmWizTemplateIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid var(--co-line);
+  color: var(--co-orange);
+  font-style: normal;
+}
+
+.prmWizTemplateBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.prmWizTemplateBody small {
+  color: var(--co-muted);
+  font-size: 11px;
+}
+
+.prmWizTemplateBody b {
+  color: var(--co-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.prmWizTemplate .prmWizTemplateBody + .prmWizTemplateBody {
+  border-inline-start: 1px solid var(--co-line);
+  padding-inline-start: 11px;
+}
+
+@media (max-width: 640px) {
+  .prmWizMethod {
+    grid-template-columns: 1fr;
+  }
+
+  .prmCard2Cta {
+    min-width: 0;
+  }
+}
+
+
+/* ===============================================================
+   Dialog polish + mobile-first responsiveness
+   =============================================================== */
+
+/* Wizard / dialog bodies scroll inside the capped modal instead of clipping
+   (desktop: modal caps at 86vh; mobile: modal fills the viewport). */
+.prmWizBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 18px 16px;
+}
+
+/* student rows — comfortable touch target, phone line under the name */
+.prmWizStudent {
+  min-height: 52px;
+}
+
+.prmWizStudentBody small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prmWizStudentBody small svg {
+  flex: 0 0 auto;
+}
+
+/* read-only "bound student" chip shown in the builder's send dialog when a
+   student is already attached to the draft (wizard / «ارسال برای شاگرد»). */
+.prmBoundStudent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 5px 10px;
+  border: 1px solid var(--co-line);
+  border-radius: var(--co-rSm);
+  background: var(--co-soft);
+}
+
+.prmBoundStudent .prmWizTemplateIcon {
+  background: #fff;
+}
+
+/* keep search text readable (the shared .prmSearch box is tinted gray) */
+.prmSearch input {
+  color: var(--co-ink);
+}
+
+/* ---- mobile: dialogs become full-screen sheets ---- */
+@media (max-width: 640px) {
+  .prmOverlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .prmModal,
+  .prmModalSmall,
+  .prmModalWide {
+    width: 100%;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  /* let one body scroll the whole sheet — no nested scrollbar for the list */
+  .prmWizStudents {
+    max-height: none;
+  }
+
+  .prmSendFields {
+    grid-template-columns: 1fr;
+  }
+
+  /* touch-friendly controls */
+  .prmBtn,
+  .prmBtnPrimary,
+  .prmBtnGhost,
+  .prmBtnDanger {
+    min-height: 46px;
+  }
+
+  .prmModalHead > button,
+  .prmIconBtn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .prmWizStudent {
+    min-height: 58px;
+    padding: 12px 13px;
+  }
+
+  .prmModalHead {
+    padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  }
+
+  .prmPreviewActions,
+  .prmConfirmActions {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ---- dialogs on mid/desktop: keep them compact and centered ---- */
+@media (min-width: 641px) and (max-width: 900px) {
+  .prmModal,
+  .prmModalSmall {
+    max-width: min(520px, 92vw);
+  }
+
+  .prmModalWide {
+    max-width: min(680px, 94vw);
+  }
+}/* ===============================================================
+   Program Cards — screenshot layout (thin 2-row + divider)
+   =============================================================== */
+
+.prmCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.prmCard2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 14px 10px;
+  background: #fff;
+  border: 1px solid var(--co-line);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.prmCard2:hover {
+  box-shadow: var(--co-shadow);
+  border-color: #dde1e7;
+}
+
+/* ===== ردیف بالا ===== */
+.prmCard2Top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.prmCard2TopMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.prmCard2TitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prmCard2TitleRow b {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--co-ink);
+  line-height: 1.35;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.prmCard2Sub {
+  display: block;
+  color: var(--co-muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* آیکون */
+.prmCard2Icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: var(--co-orangeSoft);
+  color: var(--co-orange);
+}
+
+.prmCard2IconSent {
+  background: rgba(22, 138, 104, 0.12);
+  color: var(--co-green);
+}
+
+/* خط جداکننده */
+.prmCard2Divider {
+  height: 1px;
+  background: var(--co-line);
+  margin: 0 -2px;
+}
+
+/* ===== ردیف پایین ===== */
+.prmCard2Foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.prmCard2Icons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.prmCard2Icons .prmIconBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--co-muted);
+}
+
+.prmCard2Icons .prmIconBtn:hover:not(:disabled) {
+  color: var(--co-orange);
+  background: var(--co-orangeSoft);
+}
+
+.prmCard2Icons .prmCard2Delete:hover:not(:disabled) {
+  color: var(--co-red);
+  background: var(--co-redSoft);
+}
+
+.prmCard2Cta {
+  min-height: 32px;
+  min-width: 0;
+  padding: 5px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .prmCards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .prmCards {
+    grid-template-columns: 1fr;
+  }
+
+  .prmCard2Cta {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+
