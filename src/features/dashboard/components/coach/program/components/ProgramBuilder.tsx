@@ -9,7 +9,7 @@
 // Save creates/patches live plans; Preview → Send assigns+sends.
 // =============================================================
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   BankItem,
@@ -88,6 +88,16 @@ export function ProgramBuilder({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [sendAthlete, setSendAthlete] = useState(initial?.athlete ? String(initial.athlete) : "");
+
+  useEffect(() => {
+    if (!showBank) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowBank(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [showBank]);
+
   /** Guards against a second persist (double-click / Enter) creating two plans. */
   const persisting = useRef(false);
   /**
@@ -462,7 +472,16 @@ export function ProgramBuilder({
                   <small>{activeComposition}</small>
                 </span>
                 <PrmBadge tone="orange">{activeSet.label}</PrmBadge>
-               
+                <button
+                  type="button"
+                  className={styles.prmBuilderOpenBank}
+                  onClick={() => setShowBank(true)}
+                  aria-expanded={showBank}
+                  aria-controls="program-builder-bank"
+                >
+                  <PrmIcon name={workout ? "training" : "food"} />
+                  {workout ? "بانک حرکات" : "بانک مواد غذایی"}
+                </button>
               </header>
 
               <div className={styles.prmRows}>
@@ -509,7 +528,10 @@ export function ProgramBuilder({
         </section>
 
         {/* left: bank */}
-        <aside className={`${styles.prmBuilderBank} ${showBank ? styles.prmBuilderBankOpen : ""}`}>
+        <aside
+          id="program-builder-bank"
+          className={`${styles.prmBuilderBank} ${showBank ? styles.prmBuilderBankOpen : ""}`}
+        >
           {showBank ? (
             <button type="button" className={styles.prmBankSheetClose} onClick={() => setShowBank(false)} aria-label="بستن بانک">
               <PrmIcon name="close" />

@@ -3582,4 +3582,537 @@
   opacity: 0.75;
 }
 
+/* ===============================================================
+   Final responsive contract: mobile ≤640 · tablet 641–1024 · desktop ≥1025
+   This layer intentionally follows legacy media rules and owns layout only.
+   =============================================================== */
 
+.prmWs,
+.prmWs > *,
+.prmBuilder,
+.prmBuilderGrid,
+.prmBuilderRail,
+.prmBuilderCenter,
+.prmBuilderBank,
+.prmPanel,
+.prmCard,
+.prmCard2 {
+  min-width: 0;
+}
+
+.prmBuilderOpenBank {
+  display: none;
+}
+
+.prmBankTable,
+.prmFoodTable,
+.prmRailList,
+.prmWsTabs,
+.prmListTabs {
+  max-width: 100%;
+  scrollbar-width: thin;
+}
+
+.prmBadgeBlue,
+.prmNoticeBlue {
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+}
+
+@media (min-width: 1025px) {
+  .prmBuilderGrid {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr) minmax(260px, 320px);
+    height: calc(100dvh - 208px);
+    min-height: 520px;
+    overflow: hidden;
+  }
+
+  .prmBuilderRail,
+  .prmBuilderCenter,
+  .prmBuilderBank {
+    position: static;
+    width: auto;
+    max-height: none;
+    min-height: 0;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .prmRows,
+  .prmBankPickList,
+  .prmRailList {
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .prmWs {
+    padding: 6px;
+  }
+
+  .prmBuilderGrid {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .prmBuilderRail,
+  .prmBuilderCenter,
+  .prmBuilderBank {
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .prmRailList {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px;
+  }
+
+  .prmRailItem {
+    width: min(260px, 72vw);
+    flex: 0 0 auto;
+  }
+
+  .prmRailItem .prmRailActions {
+    flex-direction: row;
+  }
+
+  .prmRows,
+  .prmBankPickList {
+    overflow: visible;
+  }
+
+  .prmBuilderBank {
+    position: static;
+    width: 100%;
+    max-height: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .prmBankSheetClose,
+  .prmSheetOverlay {
+    display: none;
+  }
+
+  .prmModal,
+  .prmModalSmall {
+    max-width: min(520px, 92vw);
+  }
+
+  .prmModalWide {
+    max-width: min(720px, 94vw);
+  }
+
+  .prmCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .prmWs {
+    width: 100%;
+    padding: 2px;
+    overflow-x: clip;
+  }
+
+  .prmWsHead {
+    align-items: stretch;
+    padding: 6px 4px 10px;
+  }
+
+  .prmWsTitle h2 {
+    font-size: 18px;
+  }
+
+  .prmWsActions,
+  .prmWsActions .prmBtnGhost,
+  .prmWsActions .prmBtnPrimary {
+    width: 100%;
+  }
+
+  .prmWsActions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .prmWsTabs,
+  .prmListTabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    width: 100%;
+  }
+
+  .prmWsTab,
+  .prmListTab {
+    min-height: 44px;
+    flex: 0 0 auto;
+  }
+
+  .prmPanel {
+    padding: 13px 12px;
+  }
+
+  .prmPanelHead > span:first-child {
+    min-width: 0;
+  }
+
+  .prmBuilderTop,
+  .prmBuilderActions {
+    align-items: stretch;
+  }
+
+  .prmBuilderTitle,
+  .prmModeSeg,
+  .prmBuilderActions {
+    flex: 1 1 100%;
+  }
+
+  .prmModeSeg {
+    justify-content: space-between;
+  }
+
+  .prmModeChip,
+  .prmModeChipActive {
+    min-height: 44px;
+    flex: 1 1 0;
+    padding-inline: 10px;
+  }
+
+  .prmBuilderActions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .prmBuilderActions .prmBtn,
+  .prmBuilderActions .prmBtnPrimary {
+    width: 100%;
+  }
+
+  .prmBuilderGrid {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    gap: 10px;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .prmBuilderRail,
+  .prmBuilderCenter {
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .prmRailList {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px;
+  }
+
+  .prmRailItem {
+    width: min(245px, 76vw);
+    flex: 0 0 auto;
+  }
+
+  .prmRailItem .prmRailActions {
+    flex-direction: row;
+  }
+
+  .prmRailMain,
+  .prmRailAdd {
+    min-height: 44px;
+  }
+
+  .prmRows {
+    overflow: visible;
+    padding: 9px;
+  }
+
+  .prmColHead {
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .prmColHead > span:first-child {
+    min-width: 0;
+  }
+
+  .prmColHeadActions {
+    width: 100%;
+  }
+
+  .prmBuilderOpenBank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 12px;
+    border: 1px solid #efbea7;
+    border-radius: 10px;
+    background: var(--co-orangeSoft);
+    color: var(--co-orangeDark);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .prmBuilderBank {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 70;
+    width: 100%;
+    max-height: min(86dvh, 720px);
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 18px 18px 0 0;
+    box-shadow: var(--co-shadowLg);
+    transform: translateY(105%);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.28s ease, opacity 0.2s ease, visibility 0.28s ease;
+  }
+
+  .prmBuilderBankOpen {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .prmBuilderBankOpen .prmBankPickHead {
+    padding: 54px 14px 12px;
+  }
+
+  .prmBankSheetClose {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 8px;
+    inset-inline-start: 12px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--co-soft);
+    color: var(--co-muted);
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .prmSheetOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    background: rgba(16, 24, 40, 0.45);
+  }
+
+  .prmBRowFields,
+  .prmBRowNotes {
+    grid-template-columns: 1fr;
+  }
+
+  .prmBRowFields {
+    display: grid;
+  }
+
+  .prmBRowFields .prmBRowName,
+  .prmBRowFields select.prmInput,
+  .prmBRowNum,
+  .prmBRowRest,
+  .prmBRowKcal {
+    width: 100%;
+  }
+
+  .prmBRowNum input,
+  .prmBRowRest input {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  .prmBankFilters,
+  .prmFoodFilterRow,
+  .prmListFilters {
+    align-items: stretch;
+  }
+
+  .prmBankFilters,
+  .prmFoodFilterRow {
+    flex-direction: column;
+  }
+
+  .prmBankFilters .prmSearch {
+    max-width: none;
+  }
+
+  .prmQuickSettings,
+  .prmChipRow,
+  .prmFoodFilterRow .prmChipRow,
+  .prmBankTabs {
+    gap: 7px;
+  }
+
+  .prmQuickField,
+  .prmFoodQuickGrid {
+    width: 100%;
+  }
+
+  .prmFoodQuickGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .prmFoodNameAdd,
+  .prmQuickAdd,
+  .prmAddMany {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prmFoodNameAdd .prmBtnPrimary,
+  .prmQuickAdd .prmBtnPrimary,
+  .prmAddMany .prmBtnPrimary {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .prmFoodPending {
+    padding: 11px;
+  }
+
+  .prmFoodPendingRow {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .prmFoodPendingActions {
+    grid-column: 2;
+    justify-content: flex-end;
+  }
+
+  .prmFoodPendingEdit,
+  .prmBankEdit,
+  .prmStructMealRow,
+  .prmSendFields {
+    grid-template-columns: 1fr;
+  }
+
+  .prmFoodPendingFoot,
+  .prmPreviewActions,
+  .prmConfirmActions,
+  .prmWizActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .prmFoodPendingFoot .prmBtn,
+  .prmFoodPendingFoot .prmBtnPrimary,
+  .prmPreviewActions .prmBtn,
+  .prmPreviewActions .prmBtnPrimary,
+  .prmConfirmActions .prmBtn,
+  .prmConfirmActions .prmBtnPrimary,
+  .prmConfirmActions .prmBtnDanger,
+  .prmWizActions .prmBtn,
+  .prmWizActions .prmBtnPrimary {
+    width: 100%;
+  }
+
+  .prmBankTable,
+  .prmFoodTable {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .prmTemplateRow,
+  .prmCard2Foot {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .prmTemplateActions,
+  .prmCard2Icons {
+    width: 100%;
+  }
+
+  .prmCard2Cta {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .prmCards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .prmModal,
+  .prmModalSmall,
+  .prmModalWide {
+    width: 100%;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .prmModalHead {
+    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+  }
+
+  .prmModalHead > button,
+  .prmIconBtn,
+  .prmSwitch,
+  .prmCheckbox {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .prmSwitch {
+    width: 44px;
+    height: 26px;
+  }
+
+  .prmSwitch i {
+    width: 20px;
+    height: 20px;
+  }
+
+  .prmSwitchOn i {
+    transform: translateX(18px);
+  }
+
+  .prmWs[dir="rtl"] .prmSwitchOn i,
+  [dir="rtl"] .prmSwitchOn i {
+    transform: translateX(-18px);
+  }
+
+  .prmPreviewBody,
+  .prmConfirmBody,
+  .prmSdBody,
+  .prmWizBody {
+    padding-inline: 14px;
+  }
+
+  .prmPreviewActions,
+  .prmConfirmActions {
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+}
