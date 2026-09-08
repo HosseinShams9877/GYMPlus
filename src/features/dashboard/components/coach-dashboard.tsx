@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { handleUnauthorized } from "@/lib/auth-session";
 import { formatPersianDate as formatApiPersianDate, dateInputProps, todayApiDate } from "@/lib/persian-date";
+import { fetchNutritionPlans, fetchWorkoutPlans } from "@/services/fetchService";
 import { ProgramWorkspace } from "./coach/program/components/ProgramWorkspace";
 
 import styles from "./coach-dashboard.module.css";
@@ -721,8 +722,8 @@ function useCoachData() {
         apiFetch<Paginated<ServiceCategory> | ServiceCategory[]>("/service-categories/"),
         apiFetch<Paginated<Invoice> | Invoice[]>("/invoices/"),
         apiFetch<Paginated<Payment> | Payment[]>("/payments/history/"),
-        apiFetch<Paginated<WorkoutPlan> | WorkoutPlan[]>("/plans/"),
-        apiFetch<Paginated<NutritionPlan> | NutritionPlan[]>("/nutrition-plans/"),
+        fetchWorkoutPlans<Paginated<WorkoutPlan> | WorkoutPlan[]>(),
+        fetchNutritionPlans<Paginated<NutritionPlan> | NutritionPlan[]>(),
         apiFetch<CoachProfile>("/coach/me/"),
       ]);
 

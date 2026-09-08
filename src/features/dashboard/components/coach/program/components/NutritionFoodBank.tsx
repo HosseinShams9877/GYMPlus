@@ -8,6 +8,9 @@
 //     PENDING list (nothing saved yet). Rows can be edited/deleted
 //     there; «تایید نهایی» saves every pending row at once and the
 //     list clears. Items then appear in the bank below.
+//     Fast entry: the name field also accepts «نام | واحد | هدف» —
+//     an unknown unit is auto-created (and then listed in the واحد
+//     selector) and the goal is assigned to the pending row.
 //   • The bank list is VIEW-ONLY (search + category + goal filters,
 //     status toggle, inline edit, delete with confirm). No add
 //     button in the list — creation only happens via quick entry.
@@ -59,6 +62,60 @@ function goalLabel(mode: PlanMode): string {
   return MODE_OPTIONS.find(([value]) => value === mode)?.[1] ?? "";
 }
 
+// ---------------------------------------------------------------
+// inline «نام | واحد | هدف» quick-entry parser
+// ---------------------------------------------------------------
+
+/** goal words → PlanMode (same vocabulary ProgramBank uses). */
+const GOAL_TERMS: Array<[string, PlanMode]> = [
+  ["حجم", "volume"], ["هیپرتروفی", "volume"], ["قدرت", "volume"], ["strength", "volume"], ["mass", "volume"],
+  ["کات", "cut"], ["کاهش", "cut"], ["چربی", "cut"], ["fat", "cut"], ["loss", "cut"], ["cut", "cut"],
+  ["خنثی", "neutral"], ["ثابت", "neutral"], ["تناسب", "neutral"], ["maintenance", "neutral"], ["neutral", "neutral"],
+];
+
+function matchGoal(token: string): PlanMode | null {
+  const key = normalize(token);
+  if (!key) return null;
+  for (const [word, mode] of GOAL_TERMS) {
+    if (key.includes(normalize(word))) return mode;
+  }
+  return null;
+}
+
+type UnitLike = { key: string; name: string; code?: string; disabled?: boolean };
+type UnitMatch = { code: string; name: string; exists: boolean };
+
+function unitCodeOf(entry: UnitLike): string {
+  return entry.code ?? entry.key;
+}
+
+/**
+ * Resolve a free-text unit token against the unit list.
+ * exists=true  → reuse the matched unit's code;
+ * exists=false → return the code the store would create for it
+ *                (caller must add the unit via api.unitAddMany).
+ */
+function resolveUnitInfo(units: UnitLike[], token: string): UnitMatch {
+  const key = normalize(token);
+  if (key) {
+    for (const entry of units) {
+      if (normalize(entry.name) === key || normalize(unitCodeOf(entry)) === key) {
+        return { code: unitCodeOf(entry), name: entry.name, exists: true };
+      }
+    }
+  }
+  // code derivation matches api.unitAddMany (unitAddMany in useProgramData)
+  const code = token.replaceAll(" ", "-").toLowerCase();
+  return { code, name: token, exists: false };
+}
+
+/** Split «نام | واحد | هدف» — unit/goal tokens optional; requires a name. */
+function splitInline(raw: string): { name: string; unitToken: string; goalToken: string } | null {
+  const parts = raw.split("|").map((part) => part.trim());
+  if (parts.length < 2 || !parts[0]) return null;
+  return { name: parts[0], unitToken: parts[1] ?? "", goalToken: parts[2] ?? "" };
+}
+
 export function NutritionFoodBank({ api }: { api: ProgramApi }) {
   const items = api.state.bank;
   const [query, setQuery] = useState("");
@@ -78,6 +135,8 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
   const [goal, setGoal] = useState<PlanMode | "">("neutral");
   const [busy, setBusy] = useState(false);
   const nameRef = useRef<HTMLInputElement | null>(null);
+  // guards against double-adding the same unit while a unitAddMany is in flight
+  const pendingUnitAdds = useRef(new Set<string>());
 
   // ------------------------------------------------- derived reference lists
   const orderedCategories = useMemo(() => {
@@ -114,6 +173,34 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
     window.dispatchEvent(new CustomEvent("gymplus:coach-toast", { detail: { message, tone } }));
   };
 
+  // ------------------------------------- inline «نام | واحد | هدف» quick entry
+  /** Reuse an existing unit's code — or create the unit (once) on the fly. */
+  const ensureUnitCode = (token: string): string => {
+    const info = resolveUnitInfo(api.state.units, token);
+    if (info.exists) return info.code;
+    const mark = normalize(token);
+    if (mark && !pendingUnitAdds.current.has(mark)) {
+      pendingUnitAdds.current.add(mark);
+      void api.unitAddMany([token]);
+    }
+    return info.code;
+  };
+
+  /** Side-effect-free live read of the typed text when it contains "|". */
+  const inlineInfo = useMemo(() => {
+    const parts = splitInline(name);
+    if (!parts) return null;
+    const unitInfo = parts.unitToken ? resolveUnitInfo(api.state.units, parts.unitToken) : null;
+    const goalMode = parts.goalToken ? matchGoal(parts.goalToken) : null;
+    return {
+      name: parts.name,
+      unit: unitInfo,
+      goal: goalMode ? goalLabel(goalMode) : "",
+      goalSet: Boolean(parts.goalToken),
+      goalMatched: Boolean(goalMode),
+    };
+  }, [name, api.state.units]);
+
   // ----------------------------------------------- "added this session" strip
   const baseline = useRef<Set<string> | null>(null);
   const everOnline = useRef(false);
@@ -128,12 +215,25 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
 
   // effective category — falls back to the first meal category until the coach picks one
   const categoryKey = category || orderedCategories[0]?.key || "";
+  const trimmedHasPipe = name.includes("|");
 
   const addPending = () => {
     const trimmed = name.trim();
     if (!trimmed) return;
     if (!categoryKey) return;
-    setPending((current) => [...current, { key: freshKey("pend"), name: trimmed, category: categoryKey, unit, goal }]);
+    const parsed = splitInline(trimmed);
+    // a "|" present but malformed (e.g. empty name) → nothing useful to add
+    if (trimmed.includes("|") && !parsed) return;
+    let rowName = trimmed;
+    let rowUnit = unit;
+    let rowGoal: PlanMode | "" = goal;
+    if (parsed) {
+      rowName = parsed.name;
+      if (parsed.unitToken) rowUnit = ensureUnitCode(parsed.unitToken);
+      // an explicit-but-unrecognized goal token → leave unset rather than guess
+      rowGoal = parsed.goalToken ? (matchGoal(parsed.goalToken) ?? "") : goal;
+    }
+    setPending((current) => [...current, { key: freshKey("pend"), name: rowName, category: categoryKey, unit: rowUnit, goal: rowGoal }]);
     setName("");
     setPendingEditKey(null);
     requestAnimationFrame(() => nameRef.current?.focus());
@@ -179,17 +279,18 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
   };
 
   // ------------------------------------------------- list (view-only) filters
-  const filtered = useMemo(() => {
-    const q = normalize(query);
-    return items.filter((item) => {
-      if (item.disabled && !q) return false;
-      if (q && !normalize(`${item.name} ${categoryName(item.category)}`).includes(q)) return false;
-      if (catFilter !== "all" && item.category !== catFilter) return false;
-      if (goalFilter !== "all" && !(item.goals ?? []).includes(goalFilter)) return false;
-      return true;
-    });
-  }, [items, query, catFilter, goalFilter]); // eslint-disable-line react-hooks/exhaustive-deps
-
+ const filtered = useMemo(() => {
+  const q = normalize(query);
+  return items.filter((item) => {
+    // این خط رو حذف کنید یا کامنت کنید
+    // if (item.disabled && !q) return false;
+    
+    if (q && !normalize(`${item.name} ${categoryName(item.category)}`).includes(q)) return false;
+    if (catFilter !== "all" && item.category !== catFilter) return false;
+    if (goalFilter !== "all" && !(item.goals ?? []).includes(goalFilter)) return false;
+    return true;
+  });
+}, [items, query, catFilter, goalFilter]);
   const startEdit = (item: BankItem) => {
     setEditingKey(item.key);
     setEditName(item.name);
@@ -224,7 +325,7 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
         <header className={styles.prmPanelHead}>
           <span>
             <h2>ثبت سریع در بانک</h2>
-            <small>دسته و واحد را انتخاب کنید و نام ماده را بنویسید؛ برای ذخیره در بانک، در پایان «تایید نهایی» را بزنید.</small>
+            <small>دسته را انتخاب کنید و نام ماده را بنویسید؛ ثبت سریع‌تر با فرمت «نام | واحد | هدف» هم پشتیبانی می‌شود. در پایان «تایید نهایی» را بزنید.</small>
           </span>
           <PrmBadge tone="green">ثبت چندتایی</PrmBadge>
         </header>
@@ -264,7 +365,7 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
               ref={nameRef}
               className={styles.prmFoodNameInput}
               value={name}
-              placeholder="نام ماده غذایی — مثل «تخم‌مرغ آب‌پز»"
+              placeholder="نام ماده غذایی — یا سریع: «تخم‌مرغ | عدد | حجم»"
               onChange={(event) => setName(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
@@ -277,6 +378,30 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
               <PrmIcon name="plus" /> افزودن به لیست
             </button>
           </div>
+
+          {trimmedHasPipe ? (
+            <p className={styles.prmQuickHelp}>
+              با جداکننده «|» وارد می‌شود: نام، واحد و هدف. اگر واحد در فهرست نباشد هنگام «افزودن» خودکار ساخته و به کادر واحد اضافه می‌شود.
+            </p>
+          ) : null}
+          {inlineInfo ? (
+            <div className={styles.prmInlinePreview}>
+              <span className={styles.prmInlinePreviewLabel}>پیش‌نمایش:</span>
+              <b>{inlineInfo.name}</b>
+              <span className={styles.prmInlineSep}>|</span>
+              {inlineInfo.unit ? (
+                <span className={`${styles.prmFoodPendingChip} ${inlineInfo.unit.exists ? "" : styles.prmQuickNewUnit}`}>
+                  {inlineInfo.unit.exists ? inlineInfo.unit.name : `${inlineInfo.unit.name} (واحد جدید)`}
+                </span>
+              ) : (
+                <span className={styles.prmFoodPendingChip}>{unitName(api, unit)}</span>
+              )}
+              <span className={styles.prmInlineSep}>|</span>
+              <span className={`${styles.prmFoodPendingChip} ${inlineInfo.goalMatched ? "" : styles.prmQuickNone}`}>
+                {inlineInfo.goalSet ? inlineInfo.goal || "بدون هدف" : goal ? goalLabel(goal) : "خنثی"}
+              </span>
+            </div>
+          ) : null}
         </div>
 
         {/* pending list — nothing saved until تایید نهایی */}
@@ -291,8 +416,21 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
           </div>
 
           {!pending.length ? (
-            <p className={styles.prmFoodPendingEmpty}>هنوز چیزی اضافه نکرده‌اید — با «افزودن به لیست» مواد را یکی‌یکی اینجا جمع کنید.</p>
-          ) : (
+  <div className={styles.prmFoodPendingEmpty}>
+    <p>هنوز چیزی اضافه نکرده‌اید — با «افزودن به لیست» مواد را یکی‌یکی اینجا جمع کنید.</p>
+    <div className={styles.prmQuickHintBox}>
+  <span className={styles.prmQuickHintIcon}>💡</span>
+  <div>
+    <strong>نکته:</strong> برای ورود سریع، از فرمت <code>نام | واحد | هدف</code> استفاده کنید.
+    {/*                                          ^ اینجا یک فاصله بذارید     */}
+    <br />
+    <span className={styles.prmQuickHintExample}>
+      مثال: <code>حلیم | کاسه | حجم</code> یا <code>شیر | لیوان | کات</code>
+    </span>
+  </div>
+</div>
+  </div>
+) : (
             <>
               <div className={styles.prmFoodPendingRows}>
                 {pending.map((row, index) => {
@@ -474,7 +612,11 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
                 {!item.goals?.length ? <PrmBadge tone="gray">همه اهداف</PrmBadge> : item.goals.map((mode) => <PrmBadge key={mode} tone={mode === "volume" ? "orange" : mode === "cut" ? "green" : "gray"}>{goalLabel(mode)}</PrmBadge>)}
               </span>
               <span className={styles.prmBankActions}>
-                <PrmToggle on={item.disabled === true} onToggle={() => void api.bankUpdate(item.key, { disabled: !item.disabled })} label="فعال/غیرفعال" />
+               <PrmToggle 
+  on={item.disabled === true} 
+  onToggle={() => void api.bankSetDisabled(item.key, !(item.disabled ?? false))} 
+  label="فعال/غیرفعال" 
+/>
                 <button type="button" className={styles.prmIconBtn} onClick={() => (editingKey === item.key ? setEditingKey(null) : startEdit(item))} aria-label="ویرایش">
                   <PrmIcon name={editingKey === item.key ? "close" : "edit"} />
                 </button>

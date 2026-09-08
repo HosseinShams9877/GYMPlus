@@ -335,14 +335,19 @@ export function ProgramBuilder({
         <button type="button" className={styles.prmIconBtn} onClick={onExit} aria-label="بازگشت به برنامه‌ها">
           <PrmIcon name="close" />
         </button>
-        <div className={styles.prmBuilderTitle}>
-          <PrmTextInput
-            value={draft.title}
-            placeholder={workout ? "عنوان برنامه تمرین..." : "عنوان برنامه غذایی..."}
-            onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
-          />
-          <small>{completedLabel} · {workout ? "تمرین" : "تغذیه"} {MODE_LABEL[draft.mode]}</small>
-        </div>
+       <div className={styles.prmBuilderTitle}>
+  {initial?.athleteName ? (
+    <small className={styles.prmBuilderStudentName}>
+      👤 ساخت برنامه برای <strong>{initial.athleteName}</strong>
+    </small>
+  ) : null}
+  <PrmTextInput
+    value={draft.title}
+    placeholder={workout ? "عنوان برنامه تمرین..." : "عنوان برنامه غذایی..."}
+    onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
+  />
+  <small>{completedLabel} · {workout ? "تمرین" : "تغذیه"} {MODE_LABEL[draft.mode]}</small>
+</div>
         <div className={styles.prmModeSeg} role="tablist" aria-label="هدف برنامه">
           {MODE_OPTIONS.map(([mode, label]) => (
             <button
@@ -436,9 +441,7 @@ export function ProgramBuilder({
               <div className={styles.prmRailEmpty}>{workout ? "روزی اضافه نکرده‌اید." : "وعده‌ای اضافه نکرده‌اید."}</div>
             ) : null}
           </div>
-          <button type="button" className={styles.prmRailAdd} onClick={addStructureRow}>
-            <PrmIcon name="plus" /> {workout ? "روز جدید" : "وعده جدید"}
-          </button>
+         
         </aside>
 
         {/* center: rows of the active structure item */}
@@ -459,14 +462,7 @@ export function ProgramBuilder({
                   <small>{activeComposition}</small>
                 </span>
                 <PrmBadge tone="orange">{activeSet.label}</PrmBadge>
-                <span className={styles.prmColHeadActions}>
-                  <button type="button" className={styles.prmBtn} onClick={() => setShowBank(true)}>
-                    <PrmIcon name="plus" /> {workout ? "افزودن حرکت" : "افزودن ماده"}
-                  </button>
-                  <button type="button" className={styles.prmBtn} onClick={addEmptyRow}>
-                    <PrmIcon name="edit" /> خالی
-                  </button>
-                </span>
+               
               </header>
 
               <div className={styles.prmRows}>
@@ -706,11 +702,7 @@ function FoodRow({ api, index, row, onChange, onRemove }: { api: ProgramApi; ind
             <input type="number" min={0} value={row.amount} onChange={(event) => applyAmount(Math.max(0, Number(event.target.value)), row.unit)} />
           </label>
           <PrmSelect value={row.unit} onChange={(unit) => recalc(row.amount, unit)} options={api.state.units.map((unit) => [(unit as UnitRefItem).code ?? unit.key, unit.name])} placeholder="واحد" />
-          <span className={styles.prmBRowKcal}>
-            <span>{row.grams.toLocaleString("fa-IR")} گرم</span>
-            <input type="number" min={0} value={row.kcal} onChange={(event) => onChange({ kcal: Math.max(0, Number(event.target.value)) })} title="کیلوکالری" aria-label="کیلوکالری" />
-            <em>کالری</em>
-          </span>
+         
           <button type="button" className={styles.prmIconBtn} onClick={onRemove} aria-label="حذف ماده">
             <PrmIcon name="trash" />
           </button>

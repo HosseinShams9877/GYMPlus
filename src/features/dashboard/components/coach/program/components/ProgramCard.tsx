@@ -4,7 +4,7 @@
 // GymPlus+ Coach — compact program card (shared workout/nutrition)
 // A full-width single-row horizontal bar:
 //
-//   [icon] [program name] [badge آماده/ارسالشده] [tag قالب کلی/شاگرد]
+//   [icon] [program name] [badge آماده/ارسال‌شده] [tag قالب کلی/شاگرد]
 //          ..................  [delete] [edit?] [preview] [clone] [CTA]
 //
 //   • Template / unsent (کلی):  icon 🏋️ workout | 🥗 nutrition,
@@ -96,10 +96,11 @@ return (
       <div className={styles.prmCard2TopMain}>
         <div className={styles.prmCard2TitleRow}>
           {/* بج اول باشه تا سمت چپِ عنوان قرار بگیره */}
+           <b>{heading}</b>
           <PrmBadge tone={sent ? "green" : "orange"}>
             {sent ? "ارسال‌شده" : "آماده"}
           </PrmBadge>
-          <b>{heading}</b>
+         
         </div>
 
         <span className={styles.prmCard2Sub}>

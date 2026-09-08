@@ -147,67 +147,91 @@ export function LoginForm() {
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmittedOnce(true);
-    setTouched({
-      email: true,
-      password: true,
-      remember: true,
+  event.preventDefault();
+  setSubmittedOnce(true);
+  setTouched({
+    email: true,
+    password: true,
+    remember: true,
+  });
+
+  if (!form.email.trim() || !form.password.trim()) {
+    return;
+  }
+
+  if ((!validateEmail(form.email) && !validatePhone(form.email)) || form.password.length < 8) {
+    return;
+  }
+
+  // ============================================================
+  // 🟢 حالت توسعه (Development) - بدون نیاز به سرور
+  // ============================================================
+  /*
+  if (process.env.NODE_ENV === "development") {
+    // اطلاعات کاربر مربی (Coach)
+    const mockUser = {
+      id: 34,
+      phone: "09120000002",
+      full_name: "محمد فلاحی",
+      role: "coach",
+    };
+
+    localStorage.setItem("gymplus_access", "dev-token-123");
+    localStorage.setItem("gymplus_refresh", "dev-refresh-456");
+    localStorage.setItem("gymplus_user", JSON.stringify(mockUser));
+
+    setErrors({});
+    router.push("/dashboard");
+    return;
+  }
+    */
+  // ============================================================
+
+  setIsSubmitting(true);
+  try {
+    const response = await fetch("https://api.gympluspro.ir/api/v1/auth/login/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone: form.email,
+        password: form.password,
+      }),
     });
 
-    if (!form.email.trim() || !form.password.trim()) {
-      return;
+    if (!response.ok) {
+      throw new Error("login_failed");
     }
 
-    if ((!validateEmail(form.email) && !validatePhone(form.email)) || form.password.length < 8) {
-      return;
+    const payload = (await response.json()) as {
+      access?: string;
+      refresh?: string;
+      user?: { full_name?: string; phone?: string; role?: string };
+    };
+
+    if (payload.access) {
+      localStorage.setItem("gymplus_access", payload.access);
+    }
+    if (payload.refresh) {
+      localStorage.setItem("gymplus_refresh", payload.refresh);
+    }
+    if (payload.user) {
+      localStorage.setItem("gymplus_user", JSON.stringify(payload.user));
     }
 
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("https://api.gympluspro.ir/api/v1/auth/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: form.email,
-          password: form.password,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("login_failed");
-      }
-
-      const payload = (await response.json()) as {
-        access?: string;
-        refresh?: string;
-        user?: { full_name?: string; phone?: string; role?: string };
-      };
-
-      if (payload.access) {
-        localStorage.setItem("gymplus_access", payload.access);
-      }
-      if (payload.refresh) {
-        localStorage.setItem("gymplus_refresh", payload.refresh);
-      }
-      if (payload.user) {
-        localStorage.setItem("gymplus_user", JSON.stringify(payload.user));
-      }
-
-      setErrors({});
-      const requestedPath = new URLSearchParams(window.location.search).get("next");
-      const safePath = requestedPath?.startsWith("/") && !requestedPath.startsWith("//") ? requestedPath : "/dashboard";
-      router.push(safePath);
-    } catch {
-      setErrors({
-        email: "اطلاعات ورود صحیح نیست یا حسابی با این شماره پیدا نشد.",
-        password: "رمز اشتباه وارد شده، دوباره امتحان کنید.",
-      });
-      setServerError("ورود با سرور انجام نشد. لطفا اطلاعات حساب خود را بررسی کنید.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    setErrors({});
+    const requestedPath = new URLSearchParams(window.location.search).get("next");
+    const safePath = requestedPath?.startsWith("/") && !requestedPath.startsWith("//") ? requestedPath : "/dashboard";
+    router.push(safePath);
+  } catch {
+    setErrors({
+      email: "اطلاعات ورود صحیح نیست یا حسابی با این شماره پیدا نشد.",
+      password: "رمز اشتباه وارد شده، دوباره امتحان کنید.",
+    });
+    setServerError("ورود با سرور انجام نشد. لطفا اطلاعات حساب خود را بررسی کنید.");
+  } finally {
+    setIsSubmitting(false);
   }
+}
 
   return (
     <div className={styles.formShell}>

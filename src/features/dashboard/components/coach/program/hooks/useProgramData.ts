@@ -190,7 +190,7 @@ function emptyReference(domain: ProgramDomain): ReferenceState {
     equipment: (domain === "workout" ? DEFAULT_EQUIPMENT : []).map((item) => ({ ...item })),
     structure: DEFAULT_REFERENCE[domain].structure.map((item) => ({ ...item, tags: [...item.tags] })),
     // sample bank until the /coach/* bank endpoint is reachable (offline/demo mode)
-    bank: seedBank.map((item) => ({ ...item, goals: [...(item.goals ?? [])] })),
+    bank: seedBank.map((item) => ({ ...item, goals: [...(item.goals ?? [])], disabled: item.disabled ?? false })),
     online: false,
     loading: false,
   };
@@ -538,7 +538,10 @@ export function useProgramData(kind: ProgramDomain) {
       if (!unique.length) return 0;
       let added = 0;
       for (const name of unique) {
-        const item: BankItem = { ...BANK_ITEM_DEFAULTS[kind](), name, ...defaults, goals: defaults.goals?.length ? defaults.goals : [] };
+        const item: BankItem = { ...BANK_ITEM_DEFAULTS[kind](), name, ...defaults, goals: defaults.goals?.length ? defaults.goals : []
+          ,
+          disabled : false
+         };
         if (state.online) {
           try {
             const saved = await programFetch<{ id?: number }>(config.bankPath, {
@@ -560,24 +563,58 @@ export function useProgramData(kind: ProgramDomain) {
     },
     [config.bankPath, kind, state.online],
   );
+  const bankSetDisabled = useCallback(
+  async (key: string, disabled: boolean) => {
+    
+    const item = state.bank.find((entry) => entry.key === key);
+    setState((current) => ({
+      ...current,
+      bank: current.bank.map((entry) => (entry.key === key ? { ...entry, disabled } : entry)),
+    }));
+    if (state.online && item?.id) {
+      try {
+        await programFetch(`${config.bankPath}${item.id}/`, { 
+          method: "PATCH", 
+          body: JSON.stringify({ disabled }) 
+        });
+      } catch {
+        /* keep local */
+      }
+    }
+  },
+  [config.bankPath, state.bank, state.online],
+);
 
   const bankUpdate = useCallback(
-    async (key: string, patch: Partial<BankItem>) => {
-      const item = state.bank.find((entry) => entry.key === key);
-      setState((current) => ({
-        ...current,
-        bank: current.bank.map((entry) => (entry.key === key ? { ...entry, ...patch } : entry)),
-      }));
-      if (state.online && item?.id) {
-        try {
-          await programFetch(`${config.bankPath}${item.id}/`, { method: "PATCH", body: JSON.stringify(patch as Record<string, unknown>) });
-        } catch {
-          /* keep local */
+  async (key: string, patch: Partial<BankItem>) => {
+    const item = state.bank.find((entry) => entry.key === key);
+    setState((current) => ({
+      ...current,
+      bank: current.bank.map((entry) => {
+        if (entry.key === key) {
+          // اطمینان از اینکه disabled به درستی آپدیت میشه
+          return { 
+            ...entry, 
+            ...patch,
+            disabled: patch.disabled !== undefined ? patch.disabled : entry.disabled 
+          };
         }
+        return entry;
+      }),
+    }));
+    if (state.online && item?.id) {
+      try {
+        await programFetch(`${config.bankPath}${item.id}/`, { 
+          method: "PATCH", 
+          body: JSON.stringify(patch as Record<string, unknown>) 
+        });
+      } catch {
+        /* keep local */
       }
-    },
-    [config.bankPath, state.bank, state.online],
-  );
+    }
+  },
+  [config.bankPath, state.bank, state.online],
+);
 
   const bankDeleteMany = useCallback(
     async (keys: string[]) => {
@@ -646,6 +683,7 @@ export function useProgramData(kind: ProgramDomain) {
       bankAdd,
       bankUpdate,
       bankDeleteMany,
+      bankSetDisabled,
       saveDraft,
       sendPlan,
       deletePlan,
@@ -668,6 +706,7 @@ export function useProgramData(kind: ProgramDomain) {
       bankAdd,
       bankUpdate,
       bankDeleteMany,
+      bankSetDisabled,
       saveDraft,
       sendPlan,
       deletePlan,

@@ -93,6 +93,7 @@ export type BankItem = RefItem & {
   goals?: PlanMode[];
   kcal100?: number;
   note?: string;
+  disabled: boolean;
 };
 
 // -------------------------------------------------------------
@@ -275,51 +276,51 @@ export const DEFAULT_NUTRITION_STRUCTURE: StructureItem[] = DEFAULT_MEAL_KINDS.m
 }));
 
 export const DEFAULT_EXERCISE_BANK: BankItem[] = [
-  { key: "bench-press", name: "پرس سینه هالتر", unit: "reps", group: "chest", equipment: "barbell", goals: ["volume"], note: "آرنج ۴۵ درجه نسبت به بدن" },
-  { key: "incline-db", name: "پرس سینه دمبل", unit: "reps", group: "chest", equipment: "dumbbell", goals: ["volume"] },
-  { key: "lat-pulldown", name: "زیربغل سیم‌کش", unit: "reps", group: "back", equipment: "cable", goals: ["volume"] },
-  { key: "deadlift", name: "ددلیفت", unit: "reps", group: "back", equipment: "barbell", goals: ["volume"] },
-  { key: "squat", name: "اسکوات", unit: "reps", group: "legs", equipment: "barbell", goals: ["volume", "cut"] },
-  { key: "leg-press", name: "پرس پا دستگاه", unit: "reps", group: "legs", equipment: "machine", goals: ["volume"] },
-  { key: "shoulder-press", name: "پرس سرشانه", unit: "reps", group: "shoulders", equipment: "dumbbell", goals: ["volume"] },
-  { key: "db-curl", name: "جلوبازو دمبل", unit: "reps", group: "biceps", equipment: "dumbbell", goals: ["volume"] },
-  { key: "pushdown", name: "پشت‌بازو سیم‌کش", unit: "reps", group: "triceps", equipment: "cable", goals: ["volume"] },
-  { key: "crunch", name: "کرانچ", unit: "reps", group: "abs", goals: ["cut"] },
-  { key: "plank", name: "پلانک", unit: "sec", group: "abs", goals: ["cut", "neutral"] },
-  { key: "treadmill", name: "تردمیل", unit: "min", group: "legs", equipment: "machine", goals: ["cut", "neutral"], note: "آهسته شروع کن و به‌مرور زیاد کن" },
-  { key: "walking", name: "پیاده‌روی", unit: "min", group: "legs", goals: ["cut", "neutral"] },
-  { key: "row-barbell", name: "نشر خم هالتر", unit: "reps", group: "back", equipment: "barbell", goals: ["volume"] },
-  { key: "side-raise", name: "نشر جانب دمبل", unit: "reps", group: "shoulders", equipment: "dumbbell", goals: ["volume"] },
-  { key: "leg-raise", name: "بالا آوردن پا", unit: "reps", group: "abs", goals: ["cut"] },
+  { key: "bench-press", name: "پرس سینه هالتر", unit: "reps", group: "chest", equipment: "barbell", goals: ["volume"], note: "آرنج ۴۵ درجه نسبت به بدن", disabled: false },
+  { key: "incline-db", name: "پرس سینه دمبل", unit: "reps", group: "chest", equipment: "dumbbell", goals: ["volume"], disabled: false },
+  { key: "lat-pulldown", name: "زیربغل سیم‌کش", unit: "reps", group: "back", equipment: "cable", goals: ["volume"], disabled: false },
+  { key: "deadlift", name: "ددلیفت", unit: "reps", group: "back", equipment: "barbell", goals: ["volume"], disabled: false },
+  { key: "squat", name: "اسکوات", unit: "reps", group: "legs", equipment: "barbell", goals: ["volume", "cut"], disabled: false },
+  { key: "leg-press", name: "پرس پا دستگاه", unit: "reps", group: "legs", equipment: "machine", goals: ["volume"], disabled: false },
+  { key: "shoulder-press", name: "پرس سرشانه", unit: "reps", group: "shoulders", equipment: "dumbbell", goals: ["volume"], disabled: false },
+  { key: "db-curl", name: "جلوبازو دمبل", unit: "reps", group: "biceps", equipment: "dumbbell", goals: ["volume"], disabled: false },
+  { key: "pushdown", name: "پشت‌بازو سیم‌کش", unit: "reps", group: "triceps", equipment: "cable", goals: ["volume"], disabled: false },
+  { key: "crunch", name: "کرانچ", unit: "reps", group: "abs", goals: ["cut"], disabled: false },
+  { key: "plank", name: "پلانک", unit: "sec", group: "abs", goals: ["cut", "neutral"], disabled: false },
+  { key: "treadmill", name: "تردمیل", unit: "min", group: "legs", equipment: "machine", goals: ["cut", "neutral"], note: "آهسته شروع کن و به‌مرور زیاد کن", disabled: false },
+  { key: "walking", name: "پیاده‌روی", unit: "min", group: "legs", goals: ["cut", "neutral"], disabled: false },
+  { key: "row-barbell", name: "نشر خم هالتر", unit: "reps", group: "back", equipment: "barbell", goals: ["volume"], disabled: false },
+  { key: "side-raise", name: "نشر جانب دمبل", unit: "reps", group: "shoulders", equipment: "dumbbell", goals: ["volume"], disabled: false },
+  { key: "leg-raise", name: "بالا آوردن پا", unit: "reps", group: "abs", goals: ["cut"], disabled: false },
 ];
 
 export const DEFAULT_FOOD_BANK: BankItem[] = [
   // صبحانه
-  { key: "egg", name: "تخم‌مرغ", unit: "piece", category: "breakfast", kcal100: 155, goals: ["volume", "cut"] },
-  { key: "oats", name: "جو دوسر", unit: "cup", category: "breakfast", kcal100: 389, goals: ["volume"] },
-  { key: "bread", name: "نان جو", unit: "slice", category: "breakfast", kcal100: 247, goals: ["volume", "cut"] },
-  { key: "yogurt", name: "ماست کم‌چرب", unit: "glass", category: "breakfast", kcal100: 63, goals: ["cut", "neutral"] },
-  { key: "peanut-butter", name: "کره بادام‌زمینی", unit: "tbsp", category: "breakfast", kcal100: 588, goals: ["volume"] },
+  { key: "egg", name: "تخم‌مرغ", unit: "piece", category: "breakfast", kcal100: 155, goals: ["volume", "cut"], disabled: false },
+  { key: "oats", name: "جو دوسر", unit: "cup", category: "breakfast", kcal100: 389, goals: ["volume"], disabled: false },
+  { key: "bread", name: "نان جو", unit: "slice", category: "breakfast", kcal100: 247, goals: ["volume", "cut"], disabled: false },
+  { key: "yogurt", name: "ماست کم‌چرب", unit: "glass", category: "breakfast", kcal100: 63, goals: ["cut", "neutral"], disabled: false },
+  { key: "peanut-butter", name: "کره بادام‌زمینی", unit: "tbsp", category: "breakfast", kcal100: 588, goals: ["volume"], disabled: false },
   // ناهار
-  { key: "chicken", name: "سینه مرغ", unit: "g", category: "lunch", kcal100: 165, goals: ["volume", "cut"] },
-  { key: "rice", name: "برنج سفید", unit: "cup", category: "lunch", kcal100: 130, goals: ["volume", "neutral"] },
-  { key: "lentil", name: "عدس پخته", unit: "cup", category: "lunch", kcal100: 116, goals: ["cut", "neutral"] },
-  { key: "potato", name: "سیب‌زمینی", unit: "g", category: "lunch", kcal100: 77, goals: ["cut", "neutral"] },
+  { key: "chicken", name: "سینه مرغ", unit: "g", category: "lunch", kcal100: 165, goals: ["volume", "cut"], disabled: false },
+  { key: "rice", name: "برنج سفید", unit: "cup", category: "lunch", kcal100: 130, goals: ["volume", "neutral"], disabled: false },
+  { key: "lentil", name: "عدس پخته", unit: "cup", category: "lunch", kcal100: 116, goals: ["cut", "neutral"], disabled: false },
+  { key: "potato", name: "سیب‌زمینی", unit: "g", category: "lunch", kcal100: 77, goals: ["cut", "neutral"], disabled: false },
   // شام
-  { key: "salmon", name: "ماهی سالمون", unit: "g", category: "dinner", kcal100: 208, goals: ["volume"] },
-  { key: "tuna", name: "تن ماهی در آب", unit: "g", category: "dinner", kcal100: 116, goals: ["volume", "cut"] },
-  { key: "olive-oil", name: "روغن زیتون", unit: "tbsp", category: "dinner", kcal100: 884, goals: ["volume", "cut"] },
+  { key: "salmon", name: "ماهی سالمون", unit: "g", category: "dinner", kcal100: 208, goals: ["volume"], disabled: false },
+  { key: "tuna", name: "تن ماهی در آب", unit: "g", category: "dinner", kcal100: 116, goals: ["volume", "cut"], disabled: false },
+  { key: "olive-oil", name: "روغن زیتون", unit: "tbsp", category: "dinner", kcal100: 884, goals: ["volume", "cut"], disabled: false },
   // میان‌وعده
-  { key: "dates", name: "خرما", unit: "piece", category: "snack", kcal100: 282, goals: ["volume", "neutral"] },
-  { key: "apple", name: "سیب", unit: "piece", category: "snack", kcal100: 52, goals: ["cut", "neutral"] },
-  { key: "banana", name: "موز", unit: "piece", category: "snack", kcal100: 89, goals: ["volume", "neutral"] },
-  { key: "walnut", name: "گردو", unit: "piece", category: "snack", kcal100: 654, goals: ["volume"] },
-  { key: "whey", name: "پودر وی", unit: "g", category: "snack", kcal100: 400, goals: ["volume"] },
+  { key: "dates", name: "خرما", unit: "piece", category: "snack", kcal100: 282, goals: ["volume", "neutral"], disabled: false },
+  { key: "apple", name: "سیب", unit: "piece", category: "snack", kcal100: 52, goals: ["cut", "neutral"], disabled: false },
+  { key: "banana", name: "موز", unit: "piece", category: "snack", kcal100: 89, goals: ["volume", "neutral"], disabled: false },
+  { key: "walnut", name: "گردو", unit: "piece", category: "snack", kcal100: 654, goals: ["volume"], disabled: false },
+  { key: "whey", name: "پودر وی", unit: "g", category: "snack", kcal100: 400, goals: ["volume"], disabled: false },
 ];
 
 export const BANK_ITEM_DEFAULTS: Record<ProgramDomain, () => BankItem> = {
-  workout: () => ({ key: freshKey("ex"), name: "", unit: "reps", group: "", equipment: "", goals: [] }),
-  nutrition: () => ({ key: freshKey("food"), name: "", unit: "g", category: "", goals: [] }),
+  workout: () => ({ key: freshKey("ex"), name: "", unit: "reps", group: "", equipment: "", goals: [], disabled: false }),
+  nutrition: () => ({ key: freshKey("food"), name: "", unit: "g", category: "", goals: [], disabled: false }),
 };
 
 // -------------------------------------------------------------

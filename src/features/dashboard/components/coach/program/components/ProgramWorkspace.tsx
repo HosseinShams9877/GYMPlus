@@ -32,6 +32,7 @@ import {
 } from "../program.types";
 import type { ServerNutritionPlan, ServerWorkoutPlan } from "../hooks/useProgramData";
 import { programFetch, programToast, useProgramData } from "../hooks/useProgramData";
+import { fetchPlanList } from "@/services/fetchService";
 import { PrmBadge, PrmIcon, PrmModal, PrmModalHead, PrmNotice, PrmOffline } from "./programShared";
 import { ProgramSettings } from "./ProgramSettings";
 import { ProgramBank } from "./ProgramBank";
@@ -271,7 +272,6 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
   const mounted = useRef(true);
   const editingRef = useRef(false);
 
-  const endpoint = kind === "workout" ? "/plans/" : "/nutrition-plans/";
   const unitWord = kind === "workout" ? "روز" : "وعده";
 
   useEffect(() => {
@@ -282,7 +282,8 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
     setLoadingPlans(true);
     setPlansError("");
     try {
-      const data = await programFetch<{ results?: RawPlan[] } | RawPlan[]>(endpoint);
+      // plan list: real API first, dev-only sample-data fallback (fetchPlanList)
+      const data = await fetchPlanList<{ results?: RawPlan[] } | RawPlan[]>(kind);
       const rows = Array.isArray(data) ? data : data?.results ?? [];
       setBundles(rows.filter((row) => row && typeof row.id === "number").map((row) => rawPlanToBundle(kind, row)));
     } catch {
@@ -291,7 +292,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
     } finally {
       if (mounted.current) setLoadingPlans(false);
     }
-  }, [endpoint, kind]);
+  }, [kind]);
 
   useEffect(() => {
     mounted.current = true;
