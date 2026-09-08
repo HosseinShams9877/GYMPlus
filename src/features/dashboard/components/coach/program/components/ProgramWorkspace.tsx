@@ -634,55 +634,59 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
               // ---- step 3: pick a saved کلی program
               <>
                 <p className={styles.prmWizHint}>کدام «برنامه کلی» را برای «{wizard.student.name}» استفاده کنیم؟</p>
-                <div className={styles.prmWizStudents}>
-                  {templates.length ? (
-                    templates.map((template, index) => {
-                      const structure = Array.isArray(template.structure) ? template.structure : [];
-                      const count = structure.length;
-                      const done = structure.filter((row) => {
-                        if (kind === "workout") {
-                          const exercises = (row as ProgramDay).exercises;
-                          return Boolean(exercises && exercises.length > 0);
-                        }
-                        const items = (row as ProgramMeal).items;
-                        return Boolean(items && items.length > 0);
-                      }).length;
-                      return (
-                        <button
-                          key={`${template.title}-${index}`}
-                          type="button"
-                          className={styles.prmWizStudent}
-                          onClick={() => setWizard({ ...wizard, template, goal: template.mode })}
-                        >
-                          <i className={styles.prmWizStudentIcon}>
-                            <PrmIcon name="copy" size={16} />
-                          </i>
-                          <span className={styles.prmWizStudentBody}>
-                            <b>{template.title}</b>
-                            <small>
-                              {MODE_LABEL[template.mode]} · {done.toLocaleString("fa-IR")} از {count.toLocaleString("fa-IR")} {unitWord} تکمیل
-                            </small>
-                          </span>
-                          <PrmIcon name="caret" size={16} />
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <PrmNotice tone="orange">
-                      هیچ «برنامه کلی» ذخیره‌شده‌ای نیست. اول از «ساخت برنامه کلی» یک قالب بسازید، یا از صفر شروع کنید.
-                    </PrmNotice>
-                  )}
-                </div>
-                <div className={styles.prmWizActions}>
-                  <button type="button" className={styles.prmWizBack} onClick={() => setWizard({ ...wizard, method: null })}>
-                    <PrmIcon name="caret" size={14} /> انتخاب روش دیگر
-                  </button>
-                  {!templates.length ? (
-                    <button type="button" className={styles.prmBtnPrimary} onClick={() => setWizard({ ...wizard, method: "scratch", template: null })}>
-                      <PrmIcon name="plus" /> ساخت از صفر
-                    </button>
-                  ) : null}
-                </div>
+<div className={styles.prmWizStudents}>
+  {(() => {
+    // برنامه‌های کلی از سرور (isTemplate یا بدون شاگرد)
+    const serverTemplates = bundles
+      .filter(bundle => bundle.draft.isTemplate || !bundle.draft.athlete)
+      .map(bundle => bundle.draft);
+    
+    // ترکیب برنامه‌های کلی از localStorage + سرور
+    const allTemplates = [...templates, ...serverTemplates];
+    
+    if (allTemplates.length) {
+      return allTemplates.map((template, index) => {
+        const structure = Array.isArray(template.structure) ? template.structure : [];
+        const count = structure.length;
+        const done = structure.filter((row) => {
+          if (kind === "workout") {
+            const exercises = (row as ProgramDay).exercises;
+            return Boolean(exercises && exercises.length > 0);
+          }
+          const items = (row as ProgramMeal).items;
+          return Boolean(items && items.length > 0);
+        }).length;
+        const isLocal = !template.id;
+        return (
+          <button
+            key={`${template.title}-${index}-${template.id || 'local'}`}
+            type="button"
+            className={styles.prmWizStudent}
+            onClick={() => setWizard({ ...wizard, template, goal: template.mode })}
+          >
+            <i className={styles.prmWizStudentIcon}>
+              <PrmIcon name="copy" size={16} />
+            </i>
+            <span className={styles.prmWizStudentBody}>
+              <b>{template.title}</b>
+              <small>
+                {MODE_LABEL[template.mode]} · {done.toLocaleString("fa-IR")} از {count.toLocaleString("fa-IR")} {unitWord} تکمیل
+                {isLocal ? ' (محلی)' : ''}
+              </small>
+            </span>
+            <PrmIcon name="caret" size={16} />
+          </button>
+        );
+      });
+    } else {
+      return (
+        <PrmNotice tone="orange">
+          هیچ «برنامه کلی» ذخیره‌شده‌ای نیست. اول از «ساخت برنامه کلی» یک قالب بسازید، یا از صفر شروع کنید.
+        </PrmNotice>
+      );
+    }
+  })()}
+</div>
               </>
             ) : (
               // ---- final: goal, then open the builder pre-configured
