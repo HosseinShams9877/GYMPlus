@@ -32,7 +32,7 @@ export const WORKOUT_GOALS: Array<[string, string]> = [
 
 export const NUTRITION_GOALS: Array<[string, string]> = [
   ["muscle_gain", "افزایش حجم"],
-  ["fat_loss", "کاهش وزن"],
+  ["fat_loss", "کاهش چربی"],
   ["fitness", "تناسب اندام"],
   ["maintenance", "تثبیت وزن"],
 ];
@@ -58,9 +58,14 @@ export function modeOfGoal(domain: ProgramDomain, goal?: string | null): PlanMod
 }
 
 /** Persian goal label for legacy goal values. */
-export function goalLabel(goal?: string | null): string {
-  const found = [...WORKOUT_GOALS, ...NUTRITION_GOALS].find(([value]) => value === goal);
-  return found ? found[1] : "بدون هدف";
+export function goalLabel(goal?: string | null, domain?: ProgramDomain): string {
+  if (!goal) return "بدون هدف";
+  const choices = domain === "workout"
+    ? WORKOUT_GOALS
+    : domain === "nutrition"
+      ? NUTRITION_GOALS
+      : [...WORKOUT_GOALS, ...NUTRITION_GOALS];
+  return choices.find(([value]) => value === goal)?.[1] ?? goal;
 }
 
 // -------------------------------------------------------------
@@ -255,7 +260,7 @@ export const DEFAULT_MEAL_KINDS: Array<[string, string]> = [
   ["lunch", "ناهار"],
   ["afternoon_snack", "عصرانه"],
   ["dinner", "شام"],
-  ["pre_bed", "قبل از خواب"],
+  ["supplement", "قبل از خواب"],
 ];
 
 /** Each meal kind suggests foods from one MEAL-based food category. */
@@ -265,7 +270,7 @@ const NUTRITION_CATEGORY_BY_MEAL_KIND: Record<string, string> = {
   lunch: "lunch",
   afternoon_snack: "snack",
   dinner: "dinner",
-  pre_bed: "snack",
+  supplement: "snack",
 };
 
 export const DEFAULT_NUTRITION_STRUCTURE: StructureItem[] = DEFAULT_MEAL_KINDS.map(([kind, name]) => ({

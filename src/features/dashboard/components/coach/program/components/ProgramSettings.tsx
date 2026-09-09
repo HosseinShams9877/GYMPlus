@@ -126,7 +126,7 @@ function WorkoutSettings({ api, kind, groupsLabel }: { api: ProgramApi; kind: Pr
               key={item.key}
               item={item}
               badge={usage > 0 ? <PrmBadge tone="gray">{usage.toLocaleString("fa-IR")} حرکت</PrmBadge> : undefined}
-              onToggle={(on) => void api.groupSetDisabled(item.key, on)}
+              onToggle={(disabled) => void api.equipmentSetDisabled(item.key, disabled)}
               onDelete={() => setSafeDelete({ kind: "equip", item })}
             />
           );
@@ -164,7 +164,7 @@ function WorkoutSettings({ api, kind, groupsLabel }: { api: ProgramApi; kind: Pr
           onDone={(choice, target) => {
             if (!safeDelete) return;
             const key = safeDelete.item.key;
-            if (choice === "disable") void api.groupSetDisabled(key, !safeDelete.item.disabled);
+            if (choice === "disable") void api.equipmentSetDisabled(key, !safeDelete.item.disabled);
             else if (choice === "move") {
               for (const item of api.state.bank) if (item.equipment === key) void api.bankUpdate(item.key, { equipment: target ?? "" });
               void api.equipmentDelete(key);
@@ -368,7 +368,7 @@ function SettingsRow({ item, onDelete, onRename, onToggle, badge }: { item: RefI
       </span>
       {badge}
       <span className={styles.prmRowActions}>
-        <PrmToggle on={item.disabled === true} onToggle={() => onToggle(!item.disabled)} label="غیرفعال/فعال" />
+        <PrmToggle on={!item.disabled} onToggle={() => onToggle(!item.disabled)} label="فعال/غیرفعال" />
         {onRename ? (
           <button type="button" className={styles.prmIconBtn} onClick={() => { setDraft(item.name); setEditing((value) => !value); }} aria-label="ویرایش نام">
             <PrmIcon name="edit" />
@@ -591,7 +591,7 @@ function MeasureUnitsSection({ api, onDelete }: { api: ProgramApi; onDelete: (it
               <PrmBadge tone="gray">{api.state.bank.filter((row) => row.unit === unit.code).length.toLocaleString("fa-IR")} مورد</PrmBadge>
             ) : null}
             <span className={styles.prmRowActions}>
-              <PrmToggle on={item.disabled === true} onToggle={() => void api.unitSetDisabled(item.key, !item.disabled)} label="غیرفعال/فعال" />
+              <PrmToggle on={!item.disabled} onToggle={() => void api.unitSetDisabled(item.key, !item.disabled)} label="فعال/غیرفعال" />
               <button type="button" className={styles.prmIconBtn} onClick={() => onDelete(item)} aria-label="حذف واحد" disabled={item.isDefault}>
                 <PrmIcon name="trash" />
               </button>
@@ -613,7 +613,7 @@ function UnitRow({ item, code, usage, onToggle, onDelete }: { item: RefItem; cod
       </span>
       {usage > 0 ? <PrmBadge tone="gray">{usage.toLocaleString("fa-IR")} حرکت</PrmBadge> : null}
       <span className={styles.prmRowActions}>
-        <PrmToggle on={item.disabled === true} onToggle={() => onToggle(!item.disabled)} label="غیرفعال/فعال" />
+        <PrmToggle on={!item.disabled} onToggle={() => onToggle(!item.disabled)} label="فعال/غیرفعال" />
         <button type="button" className={styles.prmIconBtn} onClick={onDelete} aria-label="حذف واحد" disabled={item.isDefault}>
           <PrmIcon name="trash" />
         </button>

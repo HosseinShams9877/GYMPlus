@@ -18,7 +18,7 @@
 // for a confirmation dialog before anything is removed.
 // =============================================================
 
-import type { PlanMode, ProgramDomain, ProgramDraft } from "../program.types";
+import { goalLabel, type PlanMode, type ProgramDomain, type ProgramDraft } from "../program.types";
 import { PrmBadge, PrmIcon, type PrmIconName } from "./programShared";
 
 import styles from "../program.module.css";
@@ -39,16 +39,6 @@ export type PlanCardItem = {
   totalCount: number;
 };
 
-const GOAL_LABELS: Record<string, string> = {
-  fat_loss: "کاهش چربی",
-  muscle_gain: "افزایش عضله",
-  maintenance: "حفظ وزن",
-  cut: "کات",
-  volume: "حجم",
-  strength: "قدرت",
-  endurance: "استقامت",
-  general: "عمومی",
-};
 /** Card + the full source draft so list actions can edit/clone/preview/delete. */
 export type PlanCardSource = PlanCardItem & {
   uid: string;
@@ -108,7 +98,7 @@ return (
             ? `برای ${item.athleteName || "شاگرد"}`
             : "برنامه کلی"}
           {item.goal
-            ? ` · هدف ${GOAL_LABELS[item.goal] || item.goal}`
+            ? ` · هدف ${goalLabel(item.goal, kind)}`
             : ""}
           {item.totalCount > 0
             ? ` · از ${item.doneCount} از ${item.totalCount} وعده تکمیل`

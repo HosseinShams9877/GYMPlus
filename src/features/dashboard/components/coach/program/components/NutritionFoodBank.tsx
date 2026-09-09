@@ -11,9 +11,11 @@
 //     Fast entry: the name field also accepts «نام | واحد | هدف» —
 //     an unknown unit is auto-created (and then listed in the واحد
 //     selector) and the goal is assigned to the pending row.
-//   • The bank list is VIEW-ONLY (search + category + goal filters,
-//     status toggle, inline edit, delete with confirm). No add
-//     button in the list — creation only happens via quick entry.
+//   • The bank list is VIEW-ONLY for creation (search + category + goal
+//     filters, status toggle, inline edit, delete with confirm) and adds
+//     bulk selection: select-all / per-row checkbox → move to another
+//     category, disable/enable, or delete the selection (confirmed).
+//     No add button in the list — creation only happens via quick entry.
 // =============================================================
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -125,6 +127,11 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
   const [editName, setEditName] = useState("");
   const [editKcal, setEditKcal] = useState("");
   const [deleting, setDeleting] = useState<BankItem | null>(null);
+
+  // ------------------------------------------------- bulk selection (list)
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkPick, setBulkPick] = useState(false);
+  const [bulkDeleteKeys, setBulkDeleteKeys] = useState<string[] | null>(null);
 
   // ------------------------------------------------- quick entry + pending
   const [pending, setPending] = useState<PendingRow[]>([]);
@@ -279,18 +286,47 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
   };
 
   // ------------------------------------------------- list (view-only) filters
- const filtered = useMemo(() => {
-  const q = normalize(query);
-  return items.filter((item) => {
-    // این خط رو حذف کنید یا کامنت کنید
-    // if (item.disabled && !q) return false;
-    
-    if (q && !normalize(`${item.name} ${categoryName(item.category)}`).includes(q)) return false;
-    if (catFilter !== "all" && item.category !== catFilter) return false;
-    if (goalFilter !== "all" && !(item.goals ?? []).includes(goalFilter)) return false;
-    return true;
-  });
-}, [items, query, catFilter, goalFilter]);
+  const filtered = useMemo(() => {
+    const q = normalize(query);
+    return items.filter((item) => {
+      // disabled foods stay visible (muted + struck through) — they are only
+      // excluded from builder suggestions, never from this list.
+      if (q && !normalize(`${item.name} ${categoryName(item.category)}`).includes(q)) return false;
+      if (catFilter !== "all" && item.category !== catFilter) return false;
+      if (goalFilter !== "all" && !(item.goals ?? []).includes(goalFilter)) return false;
+      return true;
+    });
+  }, [items, query, catFilter, goalFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const allFilteredSelected = filtered.length > 0 && filtered.every((item) => selected.has(item.key));
+
+  const toggleSelected = (key: string) => {
+    setSelected((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  /** Apply one action to every selected food (delete goes through PrmConfirm). */
+  const bulkAction = async (action: "disable" | "enable" | "move", target?: string) => {
+    const keys = [...selected];
+    if (!keys.length) return;
+    setBusy(true);
+    if (action === "disable") {
+      for (const key of keys) await api.bankUpdate(key, { disabled: true });
+    } else if (action === "enable") {
+      for (const key of keys) await api.bankUpdate(key, { disabled: false });
+    } else if (action === "move" && target) {
+      for (const key of keys) await api.bankUpdate(key, { category: target });
+    }
+    if (action === "move") toast(`${keys.length.toLocaleString("fa-IR")} ماده به دستهٔ «${categoryName(target)}» منتقل شد.`);
+    setSelected(new Set());
+    setBulkPick(false);
+    setBusy(false);
+  };
+
   const startEdit = (item: BankItem) => {
     setEditingKey(item.key);
     setEditName(item.name);
@@ -590,8 +626,56 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
           </div>
         </div>
 
+        {selected.size ? (
+          <div className={styles.prmBulkBar}>
+            <span className={styles.prmBulkCount}>
+              <b>{selected.size.toLocaleString("fa-IR")}</b> مورد انتخاب شده
+            </span>
+            {bulkPick ? (
+              <>
+                <span className={styles.prmBulkMove}>
+                  <PrmSelect
+                    value=""
+                    onChange={(target) => {
+                      if (target) void bulkAction("move", target);
+                    }}
+                    options={orderedCategories.map((group) => [group.key, group.name])}
+                    placeholder="انتقال به دسته..."
+                  />
+                </span>
+                <button type="button" className={styles.prmBtn} onClick={() => setBulkPick(false)} disabled={busy}>
+                  انصراف
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" className={styles.prmBtn} onClick={() => setBulkPick(true)} disabled={busy}>
+                  <PrmIcon name="swap" /> انتقال به دسته
+                </button>
+                <button type="button" className={styles.prmBtn} onClick={() => void bulkAction("disable")} disabled={busy}>
+                  <PrmIcon name="ban" /> غیرفعال کردن
+                </button>
+                <button type="button" className={styles.prmBtn} onClick={() => void bulkAction("enable")} disabled={busy}>
+                  <PrmIcon name="check" /> فعال کردن
+                </button>
+                <button type="button" className={styles.prmBtnDanger} onClick={() => setBulkDeleteKeys([...selected])} disabled={busy}>
+                  <PrmIcon name="trash" /> حذف انتخاب‌شده‌ها
+                </button>
+              </>
+            )}
+          </div>
+        ) : null}
+
         <div className={`${styles.prmBankTable} ${styles.prmFoodTable}`}>
           <div className={styles.prmBankHead}>
+            <button
+              type="button"
+              className={styles.prmCheckbox}
+              onClick={() => setSelected(allFilteredSelected ? new Set() : new Set(filtered.map((item) => item.key)))}
+              aria-label="انتخاب همهٔ موارد"
+            >
+              {allFilteredSelected ? <PrmIcon name="check" size={14} /> : null}
+            </button>
             <span className={styles.prmBankName}>نام ماده</span>
             <span className={styles.prmBankMeta}>دسته</span>
             <span className={styles.prmBankUnit}>واحد</span>
@@ -601,6 +685,9 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
 
           {filtered.map((item) => (
             <div key={item.key} className={`${styles.prmBankRow} ${item.disabled ? styles.prmBankRowDisabled : ""} ${editingKey === item.key ? styles.prmBankRowEditing : ""}`}>
+              <button type="button" className={styles.prmCheckbox} onClick={() => toggleSelected(item.key)} aria-label="انتخاب">
+                {selected.has(item.key) ? <PrmIcon name="check" size={14} /> : null}
+              </button>
               <span className={styles.prmBankName}>
                 <b>{item.name}</b>
                 {item.note ? <small>{item.note}</small> : null}
@@ -612,11 +699,7 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
                 {!item.goals?.length ? <PrmBadge tone="gray">همه اهداف</PrmBadge> : item.goals.map((mode) => <PrmBadge key={mode} tone={mode === "volume" ? "orange" : mode === "cut" ? "green" : "gray"}>{goalLabel(mode)}</PrmBadge>)}
               </span>
               <span className={styles.prmBankActions}>
-               <PrmToggle 
-  on={item.disabled === true} 
-  onToggle={() => void api.bankSetDisabled(item.key, !(item.disabled ?? false))} 
-  label="فعال/غیرفعال" 
-/>
+                <PrmToggle on={!item.disabled} onToggle={() => void api.bankSetDisabled(item.key, !item.disabled)} label="فعال/غیرفعال" />
                 <button type="button" className={styles.prmIconBtn} onClick={() => (editingKey === item.key ? setEditingKey(null) : startEdit(item))} aria-label="ویرایش">
                   <PrmIcon name={editingKey === item.key ? "close" : "edit"} />
                 </button>
@@ -684,7 +767,7 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
         </div>
 
         {items.some((item) => item.disabled) && !hasAnyFilters ? (
-          <PrmNotice tone="gray">مواد غیرفعال در بانک می‌مانند ولی در برنامه‌سازی پیشنهاد نمی‌شوند؛ با جستجو همچنان قابل مشاهده‌اند.</PrmNotice>
+          <PrmNotice tone="gray">مواد غیرفعال در بانک باقی می‌مانند اما در برنامه‌سازی پیشنهاد نمی‌شوند؛ در جدول به‌صورت کم‌رنگ و خط‌خورده نمایش داده می‌شوند.</PrmNotice>
         ) : null}
       </section>
 
@@ -701,7 +784,29 @@ export function NutritionFoodBank({ api }: { api: ProgramApi }) {
           onCancel={() => setDeleting(null)}
           onConfirm={() => {
             void api.bankDeleteMany([deleting.key]);
+            setSelected((current) => {
+              const next = new Set(current);
+              next.delete(deleting.key);
+              return next;
+            });
             setDeleting(null);
+          }}
+        />
+      ) : null}
+
+      {bulkDeleteKeys ? (
+        <PrmConfirm
+          title="حذف موارد انتخاب‌شده؟"
+          tone="red"
+          description={`این ${bulkDeleteKeys.length.toLocaleString("fa-IR")} ماده از بانک حذف می‌شود. برنامه‌های ذخیره‌شده تغییری نمی‌کنند.`}
+          confirmLabel="حذف موارد"
+          onCancel={() => setBulkDeleteKeys(null)}
+          onConfirm={() => {
+            void api.bankDeleteMany(bulkDeleteKeys);
+            toast(`${bulkDeleteKeys.length.toLocaleString("fa-IR")} ماده حذف شد.`);
+            setSelected(new Set());
+            setBulkPick(false);
+            setBulkDeleteKeys(null);
           }}
         />
       ) : null}

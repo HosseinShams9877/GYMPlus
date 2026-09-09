@@ -2791,14 +2791,14 @@
   min-width: 34px;
 }
 
-/* 5-column table: Name | Category | Unit | Goal | Status (no checkbox) */
+/* 6-column table: ☑ | Name | Category | Unit | Goal | Status */
 .prmFoodTable {
-  --bank-cols: minmax(190px, 1.7fr) minmax(120px, 0.7fr) minmax(90px, 0.5fr) minmax(150px, 1.2fr) auto;
+  --bank-cols: 26px minmax(190px, 1.7fr) minmax(120px, 0.7fr) minmax(90px, 0.5fr) minmax(150px, 1.2fr) auto;
 }
 
 .prmFoodTable .prmBankHead,
 .prmFoodTable .prmBankRow {
-  min-width: 660px;
+  min-width: 700px;
 }
 
 .prmFoodEditSave {
@@ -2841,7 +2841,7 @@
   }
 
   .prmFoodTable .prmBankRow {
-    min-width: 580px;
+    min-width: 620px;
   }
 }
 

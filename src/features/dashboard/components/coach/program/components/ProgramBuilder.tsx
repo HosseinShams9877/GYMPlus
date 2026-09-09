@@ -216,7 +216,7 @@ export function ProgramBuilder({
       setStructure([...days, { key: freshKey("day"), name: `روز ${structureCount + 1}`, muscles: [], exercises: [] }]);
       setActiveIndex(structureCount);
     } else {
-      setStructure([...meals, { key: freshKey("meal"), kind: "extra", name: `وعده ${structureCount + 1}`, category: "", items: [] }]);
+      setStructure([...meals, { key: freshKey("meal"), kind: "supplement", name: `وعده ${structureCount + 1}`, category: "", items: [] }]);
       setActiveIndex(structureCount);
     }
   };
@@ -313,6 +313,7 @@ export function ProgramBuilder({
       // Retry of an interrupted create: reuse the id we already got so we PATCH
       // the same plan instead of POSTing a duplicate.
       const toSave = createdPlanId.current && !draft.id ? { ...draft, id: createdPlanId.current } : draft;
+      const alreadyAssigned = Boolean(toSave.athlete);
       const { id } = await api.saveDraft(toSave, planSnapshot);
       if (createdPlanId.current === null) {
         createdPlanId.current = id;
@@ -326,7 +327,7 @@ export function ProgramBuilder({
       const mustSend = Boolean(sendAthlete && (sendNow || athleteBound));
       let sent = false;
       if (mustSend) {
-        await api.sendPlan(kind, id, Number(sendAthlete), draft.durationWeeks || 4);
+        await api.sendPlan(kind, id, Number(sendAthlete), draft.durationWeeks || 4, alreadyAssigned);
         sent = true;
       }
       onSaved(id, sent);

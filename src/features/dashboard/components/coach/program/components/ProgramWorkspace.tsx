@@ -28,6 +28,7 @@ import {
   ProgramDraft,
   ProgramMeal,
   freshKey,
+  goalLabel,
   modeOfGoal,
 } from "../program.types";
 import type { ServerNutritionPlan, ServerWorkoutPlan } from "../hooks/useProgramData";
@@ -530,7 +531,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
       ) : null}
 
       {view === "settings" ? <ProgramSettings kind={kind} api={api} groupsLabel={groupsLabel} /> : null}
-      {view === "bank" ? (kind === "workout" ? <ProgramBank kind={kind} api={api} /> : <NutritionFoodBank api={api} />) : null}
+      {view === "bank" ? (kind === "workout" ? <ProgramBank api={api} /> : <NutritionFoodBank api={api} />) : null}
 
       {view === "plans" ? (
         loadingPlans ? (
@@ -738,7 +739,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
           <PrmModalHead title="پیش‌نمایش برنامه" onClose={() => setPreview(null)} subtitle={preview.title || "بدون عنوان"} />
           <div className={styles.prmPreviewBody}>
             <div className={styles.prmPreviewMeta}>
-              <PrmBadge tone="orange">{MODE_LABEL[preview.mode]}</PrmBadge>
+              <PrmBadge tone="orange">{preview.goal ? goalLabel(preview.goal, kind) : MODE_LABEL[preview.mode]}</PrmBadge>
               {Boolean(preview.athleteName) ? <PrmBadge tone="green">برنامه {preview.athleteName}</PrmBadge> : <PrmBadge tone="gray">برنامه کلی</PrmBadge>}
               <PrmBadge tone="gray">{(preview.durationWeeks || 4).toLocaleString("fa-IR")} هفته</PrmBadge>
               <PrmBadge tone="gray">

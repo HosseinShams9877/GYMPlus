@@ -509,6 +509,27 @@ export function useProgramData(kind: ProgramDomain) {
     [config.equipmentPath, state.online, touchList],
   );
 
+  const equipmentSetDisabled = useCallback(
+    async (key: string, disabled: boolean) => {
+      const item = state.equipment.find((entry) => entry.key === key);
+      touchList((current) => ({
+        ...current,
+        equipment: current.equipment.map((entry) => (entry.key === key ? { ...entry, disabled } : entry)),
+      }));
+      if (state.online && item?.id && config.equipmentPath) {
+        try {
+          await programFetch(`${config.equipmentPath}${item.id}/`, {
+            method: "PATCH",
+            body: JSON.stringify({ disabled }),
+          });
+        } catch {
+          /* keep local */
+        }
+      }
+    },
+    [config.equipmentPath, state.equipment, state.online, touchList],
+  );
+
   const equipmentDelete = useCallback(
     async (key: string) => {
       const item = state.equipment.find((entry) => entry.key === key);
@@ -546,7 +567,15 @@ export function useProgramData(kind: ProgramDomain) {
           try {
             const saved = await programFetch<{ id?: number }>(config.bankPath, {
               method: "POST",
-              body: JSON.stringify({ name, unit: item.unit, group: item.group, category: item.category, goals: item.goals }),
+              body: JSON.stringify({
+                name,
+                unit: item.unit,
+                group: item.group,
+                category: item.category,
+                // omitted when empty so the nutrition bank never posts an equipment key
+                equipment: item.equipment || undefined,
+                goals: item.goals,
+              }),
             });
             item.id = saved?.id;
             added += 1;
@@ -650,10 +679,14 @@ export function useProgramData(kind: ProgramDomain) {
   );
 
   const sendPlan = useCallback(
-    async (kind: ProgramDomain, planId: number, athlete: number, weeks: number) => {
+    async (kind: ProgramDomain, planId: number, athlete: number, weeks: number, alreadyAssigned = false) => {
       const base = kind === "workout" ? "/plans/" : "/nutrition-plans/";
-      await programFetch(`${base}${planId}/assign/`, { method: "POST", body: JSON.stringify({ athlete }) });
-      await programFetch(`${base}${planId}/send/`, { method: "POST", body: JSON.stringify({ duration_weeks: weeks }) });
+      let targetPlanId = planId;
+      if (!alreadyAssigned) {
+        const assigned = await programFetch<{ id?: number }>(`${base}${planId}/assign/`, { method: "POST", body: JSON.stringify({ athlete }) });
+        targetPlanId = assigned?.id ?? planId;
+      }
+      await programFetch(`${base}${targetPlanId}/send/`, { method: "POST", body: JSON.stringify({ duration_weeks: weeks }) });
     },
     [],
   );
@@ -678,6 +711,7 @@ export function useProgramData(kind: ProgramDomain) {
       unitSetGrams,
       unitDelete,
       equipmentAddMany,
+      equipmentSetDisabled,
       equipmentDelete,
       structureUpdate,
       bankAdd,
@@ -701,6 +735,7 @@ export function useProgramData(kind: ProgramDomain) {
       unitSetGrams,
       unitDelete,
       equipmentAddMany,
+      equipmentSetDisabled,
       equipmentDelete,
       structureUpdate,
       bankAdd,
@@ -802,6 +837,7 @@ async function saveWorkoutPlan(draft: ProgramDraft & { structure: ProgramDay[] }
 // -------------------------------------------------------------
 
 async function saveNutritionPlan(draft: ProgramDraft & { structure: ProgramMeal[] }, snapshot?: ServerNutritionPlan): Promise<{ id: number }> {
+  const mealKindForApi = (kind: string) => (kind === "pre_bed" || kind === "extra" ? "supplement" : kind);
   const payload = {
     title: draft.title,
     athlete: draft.athlete ?? null,
@@ -830,17 +866,18 @@ async function saveNutritionPlan(draft: ProgramDraft & { structure: ProgramMeal[
 
   for (let index = 0; index < draft.structure.length; index += 1) {
     const meal = draft.structure[index];
+    const mealPayload = { kind: mealKindForApi(meal.kind), index: index + 1, name: meal.name };
     const source = snapshotMeals.find((row) => row.id === meal.serverId);
     let mealId = meal.serverId ?? source?.id;
     if (mealId) {
       try {
-        await programFetch(`/nutrition-meals/${mealId}/`, { method: "PATCH", body: JSON.stringify({ kind: meal.kind, index: index + 1, name: meal.name }) });
+        await programFetch(`/nutrition-meals/${mealId}/`, { method: "PATCH", body: JSON.stringify(mealPayload) });
       } catch {
         mealId = undefined;
       }
     }
     if (!mealId) {
-      const created = await programFetch<{ id: number }>("/nutrition-meals/", { method: "POST", body: JSON.stringify({ plan: planId, kind: meal.kind, index: index + 1, name: meal.name }) });
+      const created = await programFetch<{ id: number }>("/nutrition-meals/", { method: "POST", body: JSON.stringify({ plan: planId, ...mealPayload }) });
       mealId = created.id;
       meal.serverId = created.id; // remember it so a retry PATCHes instead of re-creating
     }
