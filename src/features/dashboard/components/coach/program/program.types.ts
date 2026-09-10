@@ -118,11 +118,20 @@ export type StructureItem = {
 // Plan records (structural supersets of the backend plan shapes)
 // -------------------------------------------------------------
 
+export type ProgramExerciseSet = {
+  reps?: number | null;
+  weight?: number | null;
+};
+
 export type ProgramExercise = {
   key: string;
   name: string;
   sets: number;
   reps: number;
+  /** Default load in kilograms when the API supplies one. */
+  weight?: number | null;
+  /** Per-set values shown in athlete-equivalent read-only previews. */
+  setDetails?: ProgramExerciseSet[];
   unit: string; // execution-unit code — e.g. reps | sec | min | m
   restSec: number;
   note: string;
@@ -140,6 +149,9 @@ export type ProgramFoodItem = {
   amount: number;
   unit: string; // measurement-unit code
   kcal: number;
+  protein?: number | null;
+  carbs?: number | null;
+  fat?: number | null;
   note: string;
   alternative: string;
   alternativeKey?: string;
@@ -171,6 +183,8 @@ export type ProgramMeal = {
 export type ProgramDraft = {
   id?: number;
   isNew: boolean;
+  /** Local list-card state. Persisted so only explicit copies show as drafts. */
+  cardStatus?: "draft" | "ready";
   domain: ProgramDomain;
   title: string;
   mode: PlanMode;

@@ -148,7 +148,7 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<BankItem | null>(null);
   const [bulkDeleteKeys, setBulkDeleteKeys] = useState<string[] | null>(null);
-  const [bulkPick, setBulkPick] = useState(false);
+  const [bulkPick, setBulkPick] = useState<"group" | "equipment" | null>(null);
   const [pending, setPending] = useState<PendingExercise[]>([]);
   const [pendingEditKey, setPendingEditKey] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -290,7 +290,7 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
     }
   };
 
-  const bulkAction = async (action: "disable" | "enable" | "move", target?: string) => {
+  const bulkAction = async (action: "disable" | "enable" | "move" | "equipment", target?: string) => {
     const keys = [...selected];
     if (!keys.length) return;
     setBusy(true);
@@ -299,12 +299,14 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
     } else if (action === "enable") {
       for (const key of keys) await api.bankUpdate(key, { disabled: false });
     } else if (action === "move" && target) {
-      const patch: Partial<BankItem> = kind === "workout" ? { group: target } : { category: target };
-      for (const key of keys) await api.bankUpdate(key, patch);
+      for (const key of keys) await api.bankUpdate(key, { group: target });
+    } else if (action === "equipment" && target) {
+      for (const key of keys) await api.bankUpdate(key, { equipment: target });
     }
     if (action === "move") toast("انتقال انجام شد.");
+    if (action === "equipment") toast("تجهیز حرکات انتخاب‌شده تغییر کرد.");
     setSelected(new Set());
-    setBulkPick(false);
+    setBulkPick(null);
     setBusy(false);
   };
 
@@ -401,20 +403,23 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
                 <PrmSelect
                   value=""
                   onChange={(target) => {
-                    if (target) void bulkAction("move", target);
+                    if (target) void bulkAction(bulkPick === "equipment" ? "equipment" : "move", target);
                   }}
-                  options={activeGroups.map((item) => [item.key, item.name])}
-                  placeholder={`انتقال به ${tagLabel}...`}
+                  options={(bulkPick === "equipment" ? api.state.equipment.filter((item) => !item.disabled) : activeGroups).map((item) => [item.key, item.name])}
+                  placeholder={bulkPick === "equipment" ? "انتخاب تجهیز جدید..." : `انتقال به ${tagLabel}...`}
                 />
               </span>
-              <button type="button" className={styles.prmBtn} onClick={() => setBulkPick(false)} disabled={busy}>
+              <button type="button" className={styles.prmBtn} onClick={() => setBulkPick(null)} disabled={busy}>
                 انصراف
               </button>
             </>
           ) : (
             <>
-              <button type="button" className={styles.prmBtn} onClick={() => setBulkPick(true)} disabled={busy}>
-                <PrmIcon name="swap" /> انتقال
+              <button type="button" className={styles.prmBtn} onClick={() => setBulkPick("group")} disabled={busy}>
+                <PrmIcon name="swap" /> انتقال گروه
+              </button>
+              <button type="button" className={styles.prmBtn} onClick={() => setBulkPick("equipment")} disabled={busy}>
+                <PrmIcon name="settings" /> تغییر تجهیز
               </button>
               <button type="button" className={styles.prmBtn} onClick={() => void bulkAction("disable")} disabled={busy}>
                 <PrmIcon name="ban" /> غیرفعال
@@ -443,6 +448,7 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
           </button>
           <span className={styles.prmBankName}>{kind === "workout" ? "نام حرکت" : "نام ماده"}</span>
           <span className={styles.prmBankMeta}>{tagLabel}</span>
+          {kind === "workout" ? <span className={styles.prmBankEquipment}>تجهیز</span> : null}
           <span className={styles.prmBankUnit}>واحد</span>
           <span className={styles.prmBankGoals}>هدف</span>
           <span className={styles.prmBankActions}>وضعیت</span>
@@ -472,9 +478,12 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
                 {item.disabled ? <PrmBadge tone="gray" muted>غیرفعال</PrmBadge> : null}
               </span>
               <span className={styles.prmBankMeta}>{groupName(tag)}</span>
+              {kind === "workout" ? (
+                <span className={styles.prmBankEquipment}>{equipmentLabel(api, item.equipment ?? "")}</span>
+              ) : null}
               <span className={styles.prmBankUnit}>{unitName(api, item.unit ?? "")}</span>
               <span className={styles.prmBankGoals}>
-                {!item.goals?.length ? <PrmBadge tone="blue">همه اهداف</PrmBadge> : item.goals.map((goal) => <PrmBadge key={goal} tone={goal === "volume" ? "orange" : goal === "cut" ? "green" : "gray"}>{MODE_OPTIONS.find(([mode]) => mode === goal)?.[1]}</PrmBadge>)}
+                {!item.goals?.length ? <PrmBadge tone="orange">همه اهداف</PrmBadge> : item.goals.map((goal) => <PrmBadge key={goal} tone={goal === "volume" ? "orange" : goal === "cut" ? "green" : "gray"}>{MODE_OPTIONS.find(([mode]) => mode === goal)?.[1]}</PrmBadge>)}
               </span>
               <span className={styles.prmBankActions}>
                 <PrmToggle on={!item.disabled} onToggle={() => void api.bankSetDisabled(item.key, !item.disabled)} label="فعال/غیرفعال" />
@@ -515,12 +524,6 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
                         placeholder="بدون تجهیز"
                       />
                     </span>
-                  ) : null}
-                  {kind === "nutrition" ? (
-                    <label className={styles.prmBankEditField}>
-                      <span>کالری هر ۱۰۰ گرم</span>
-                      <input className={styles.prmMiniInput} type="number" min={0} value={item.kcal100 ?? 0} onChange={(event) => void api.bankUpdate(item.key, { kcal100: Number(event.target.value) })} />
-                    </label>
                   ) : null}
                   <span className={styles.prmBankEditField}>
                     <span>هدف</span>
@@ -567,7 +570,7 @@ export function ProgramBank({ api }: { kind?: "workout"; api: ProgramApi }) {
             void api.bankDeleteMany(bulkDeleteKeys);
             toast(`${bulkDeleteKeys.length.toLocaleString("fa-IR")} حرکت حذف شد.`);
             setSelected(new Set());
-            setBulkPick(false);
+            setBulkPick(null);
             setBulkDeleteKeys(null);
           }}
         />

@@ -37,6 +37,8 @@ export type PlanCardItem = {
   durationWeeks?: number;
   doneCount: number;
   totalCount: number;
+  /** Explicit card status for local copies that have not been published. */
+  status?: "draft" | "ready" | "sent";
 };
 
 /** Card + the full source draft so list actions can edit/clone/preview/delete. */
@@ -65,6 +67,7 @@ export function ProgramCard({
 }) {
   const isStudent = Boolean(item.athleteName || item.athlete);
   const sent = Boolean(item.sentAt);
+  const draftStatus = item.status === "draft";
 
   // Type icon: 🏋️/🥗 for reusable/general programs, 👤 for a student program.
   const icon: PrmIconName = isStudent ? "user" : kind === "workout" ? "training" : "food";
@@ -87,8 +90,8 @@ return (
         <div className={styles.prmCard2TitleRow}>
           {/* بج اول باشه تا سمت چپِ عنوان قرار بگیره */}
            <b>{heading}</b>
-          <PrmBadge tone={sent ? "green" : "orange"}>
-            {sent ? "ارسال‌شده" : "آماده"}
+          <PrmBadge tone={sent ? "green" : draftStatus ? "gray" : "orange"}>
+            {sent ? "ارسال‌شده" : draftStatus ? "پیش‌نویس" : "آماده"}
           </PrmBadge>
          
         </div>

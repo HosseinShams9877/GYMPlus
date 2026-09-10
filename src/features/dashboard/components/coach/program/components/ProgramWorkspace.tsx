@@ -28,17 +28,17 @@ import {
   ProgramDraft,
   ProgramMeal,
   freshKey,
-  goalLabel,
   modeOfGoal,
 } from "../program.types";
 import type { ServerNutritionPlan, ServerWorkoutPlan } from "../hooks/useProgramData";
 import { programFetch, programToast, useProgramData } from "../hooks/useProgramData";
 import { fetchPlanList } from "@/services/fetchService";
-import { PrmBadge, PrmIcon, PrmModal, PrmModalHead, PrmNotice, PrmOffline } from "./programShared";
+import { PrmIcon, PrmModal, PrmModalHead, PrmNotice, PrmOffline } from "./programShared";
 import { ProgramSettings } from "./ProgramSettings";
 import { ProgramBank } from "./ProgramBank";
 import { NutritionFoodBank } from "./NutritionFoodBank";
-import { AthleteOption, ProgramBuilder, blankFromStructure, templateDraftCopy } from "./ProgramBuilder";
+import { AthleteOption, ProgramBuilder, blankFromStructure } from "./ProgramBuilder";
+import { ProgramPreview } from "./ProgramPreview";
 import { ProgramList, type PlanCardSource } from "./ProgramList";
 import { StudentSelectDialog } from "./StudentSelectDialog";
 
@@ -69,8 +69,8 @@ function saveTemplates(list: ProgramDraft[]) {
   }
 }
 
-/** Deep copy with fresh keys and no server ids — safe to store as a template. */
-function cloneDraft(src: ProgramDraft, keepTitle: boolean): ProgramDraft {
+/** Deep copy with fresh keys and no server ids, assignment, or sent metadata. */
+function cloneDraft(src: ProgramDraft, title = src.title): ProgramDraft {
   if (src.domain === "workout") {
     const days: ProgramDay[] = (src.structure as ProgramDay[]).map((day) => ({
       ...day,
@@ -83,7 +83,7 @@ function cloneDraft(src: ProgramDraft, keepTitle: boolean): ProgramDraft {
       id: undefined,
       isNew: true,
       isTemplate: true,
-      title: keepTitle ? src.title : src.title,
+      title,
       athlete: null,
       athleteName: null,
       sentAt: null,
@@ -101,7 +101,7 @@ function cloneDraft(src: ProgramDraft, keepTitle: boolean): ProgramDraft {
     id: undefined,
     isNew: true,
     isTemplate: true,
-    title: src.title,
+    title,
     athlete: null,
     athleteName: null,
     sentAt: null,
@@ -109,9 +109,10 @@ function cloneDraft(src: ProgramDraft, keepTitle: boolean): ProgramDraft {
   };
 }
 
-type RawExercise = { id?: number; name?: string; sets?: number; reps?: number; note?: string };
+type RawExerciseSet = { reps?: number | null; repetitions?: number | null; weight?: number | null; kg?: number | null; load?: number | null };
+type RawExercise = { id?: number; name?: string; sets?: number; reps?: number; weight?: number | null; rest_sec?: number; rest_seconds?: number; unit?: string; note?: string; alternative?: string; alternative_name?: string; set_details?: RawExerciseSet[]; details?: RawExerciseSet[] };
 type RawDay = { id?: number; name?: string; exercises?: RawExercise[] };
-type RawFoodItem = { id?: number; name?: string; amount_g?: number; note?: string };
+type RawFoodItem = { id?: number; name?: string; amount_g?: number; amount?: number; unit?: string; calories?: number | null; kcal?: number | null; protein_g?: number | null; protein?: number | null; carb_g?: number | null; carbs?: number | null; carbohydrate_g?: number | null; fat_g?: number | null; fat?: number | null; note?: string; alternative?: string; alternative_name?: string };
 type RawMeal = { id?: number; kind?: string; name?: string; items?: RawFoodItem[] };
 type RawPlan = {
   id: number;
@@ -137,10 +138,15 @@ function rawPlanToBundle(kind: ProgramDomain, raw: RawPlan): { draft: ProgramDra
         name: exercise.name ?? "",
         sets: exercise.sets ?? 3,
         reps: exercise.reps ?? 12,
-        unit: "reps",
-        restSec: 60,
+        weight: exercise.weight ?? null,
+        setDetails: (exercise.set_details ?? exercise.details ?? []).map((detail) => ({
+          reps: detail.reps ?? detail.repetitions ?? exercise.reps ?? null,
+          weight: detail.weight ?? detail.kg ?? detail.load ?? exercise.weight ?? null,
+        })),
+        unit: exercise.unit ?? "reps",
+        restSec: exercise.rest_seconds ?? exercise.rest_sec ?? 60,
         note: exercise.note ?? "",
-        alternative: "",
+        alternative: exercise.alternative ?? exercise.alternative_name ?? "",
         serverId: exercise.id,
       })),
     }));
@@ -170,12 +176,15 @@ function rawPlanToBundle(kind: ProgramDomain, raw: RawPlan): { draft: ProgramDra
       items: items.map((item) => ({
         key: freshKey("food"),
         name: item.name ?? "",
-        amount: Number(item.amount_g ?? 0) || 0,
-        unit: "g",
-        grams: Number(item.amount_g ?? 0) || 0,
-        kcal: 0,
+        amount: Number(item.amount ?? item.amount_g ?? 0) || 0,
+        unit: item.unit ?? "g",
+        grams: Number(item.amount_g ?? item.amount ?? 0) || 0,
+        kcal: Number(item.calories ?? item.kcal ?? 0) || 0,
+        protein: item.protein_g ?? item.protein ?? null,
+        carbs: item.carb_g ?? item.carbs ?? item.carbohydrate_g ?? null,
+        fat: item.fat_g ?? item.fat ?? null,
         note: item.note ?? "",
-        alternative: "",
+        alternative: item.alternative ?? item.alternative_name ?? "",
         serverId: item.id,
       })),
       serverId: meal.id,
@@ -344,7 +353,8 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
   const toast = (message: string, tone: "success" | "info" = "success") => programToast(message, tone);
 
   const handleTemplate = (draft: ProgramDraft) => {
-    const copy = cloneDraft(draft, true);
+    const copy = cloneDraft(draft);
+    copy.cardStatus = "ready";
     persistTemplates([copy, ...templates.filter((item) => item.title !== copy.title)]);
     toast("قالب «برنامه کلی» ذخیره شد.");
   };
@@ -361,7 +371,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
     const goal = wizard.goal;
     let base: ProgramDraft;
     if (wizard.method === "existing" && wizard.template) {
-      base = cloneDraft(wizard.template, true);
+      base = cloneDraft(wizard.template);
     } else {
       base = blankFromStructure(kind, api.state.structure);
     }
@@ -399,6 +409,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
       uid: `tpl-${index}-${template.title}`,
       local: true,
       draft: template,
+      status: template.cardStatus ?? "ready",
     }));
     return [...planItems, ...templateItems];
   }, [bundles, templates, kind]);
@@ -407,7 +418,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
     if (item.local) {
       // Editing a reusable «برنامه کلی» template: start a fresh editable
       // copy (save-as-template overwrites it; a normal save makes a new plan).
-      setEditing({ draft: cloneDraft(item.draft, true), snapshot: undefined });
+      setEditing({ draft: cloneDraft(item.draft), snapshot: undefined });
       return;
     }
     const bundle = bundles.find((entry) => entry.draft.id === item.id);
@@ -416,7 +427,13 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
   };
 
   const openForClone = (item: PlanCardSource) => {
-    setEditing({ draft: templateDraftCopy(item.draft), snapshot: undefined });
+    const sourceTitle = item.title || (kind === "workout" ? "برنامه بدون عنوان" : "برنامه غذایی بدون عنوان");
+    const copy = cloneDraft(item.draft, `${sourceTitle} (کپی)`);
+    copy.isTemplate = true;
+    copy.isNew = true;
+    copy.cardStatus = "draft";
+    persistTemplates([copy, ...templates]);
+    toast("نسخهٔ کپی به‌صورت پیش‌نویس ساخته شد.");
   };
 
   const removeProgram = async (item: PlanCardSource) => {
@@ -444,7 +461,7 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
     if (editingRef.current) return; // builder already open — ignore
     const athlete = athletes.find((entry) => entry.id === athleteId);
     if (!athlete) return;
-    const copy = cloneDraft(item.draft, true);
+    const copy = cloneDraft(item.draft);
     copy.isTemplate = false;
     copy.athlete = athlete.id;
     copy.athleteName = athlete.name;
@@ -452,11 +469,6 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
     copy.durationWeeks = item.durationWeeks || copy.durationWeeks || 4;
     setEditing({ draft: copy, snapshot: undefined });
     toast(`شاگرد «${athlete.name}» انتخاب شد؛ برنامه را بررسی کنید — با «ذخیره» برای او ارسال می‌شود.`);
-  };
-
-  const startPreviewEdit = (item: PlanCardSource) => {
-    setPreview(null);
-    openForEdit(item);
   };
 
   if (editing) {
@@ -733,48 +745,8 @@ export function ProgramWorkspace({ kind }: { kind: ProgramDomain }) {
         </PrmModal>
       ) : null}
 
-      {/* ---------------- read-only card preview ---------------- */}
-      {preview ? (
-        <PrmModal onClose={() => setPreview(null)} wide>
-          <PrmModalHead title="پیش‌نمایش برنامه" onClose={() => setPreview(null)} subtitle={preview.title || "بدون عنوان"} />
-          <div className={styles.prmPreviewBody}>
-            <div className={styles.prmPreviewMeta}>
-              <PrmBadge tone="orange">{preview.goal ? goalLabel(preview.goal, kind) : MODE_LABEL[preview.mode]}</PrmBadge>
-              {Boolean(preview.athleteName) ? <PrmBadge tone="green">برنامه {preview.athleteName}</PrmBadge> : <PrmBadge tone="gray">برنامه کلی</PrmBadge>}
-              <PrmBadge tone="gray">{(preview.durationWeeks || 4).toLocaleString("fa-IR")} هفته</PrmBadge>
-              <PrmBadge tone="gray">
-                {preview.doneCount.toLocaleString("fa-IR")} از {preview.totalCount.toLocaleString("fa-IR")} {unitWord} تکمیل
-              </PrmBadge>
-            </div>
-            <div className={styles.prmPreviewList}>
-              {(kind === "workout" ? (preview.draft.structure as ProgramDay[]) : (preview.draft.structure as ProgramMeal[])).map((row, index) => {
-                const rows = kind === "workout" ? ((row as ProgramDay).exercises ?? []) : ((row as ProgramMeal).items ?? []);
-                const sum = kind === "workout" ? rows.reduce((s, r) => s + ((r as { sets?: number }).sets || 0), 0) : rows.reduce((s, r) => s + ((r as { kcal?: number }).kcal || 0), 0);
-                return (
-                  <div key={row.key} className={styles.prmPreviewRow}>
-                    <span className={styles.prmPreviewIndex}>{(index + 1).toLocaleString("fa-IR")}</span>
-                    <span className={styles.prmPreviewMain}>
-                      <b>{row.name || `${unitWord} ${index + 1}`}</b>
-                      <small>
-                        {rows.length} {kind === "workout" ? "حرکت" : "ماده"} · {kind === "workout" ? `${sum} ست` : `${sum} کیلوکالری`}
-                      </small>
-                    </span>
-                    {rows.length === 0 ? <PrmBadge tone="red">ناقص</PrmBadge> : <PrmBadge tone="green">تکمیل</PrmBadge>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className={styles.prmPreviewActions}>
-            <button type="button" className={styles.prmBtn} onClick={() => setPreview(null)}>
-              بستن
-            </button>
-            <button type="button" className={styles.prmBtnPrimary} onClick={() => startPreviewEdit(preview)}>
-              <PrmIcon name="edit" /> ویرایش برنامه
-            </button>
-          </div>
-        </PrmModal>
-      ) : null}
+      {/* ---------------- full-screen, athlete-equivalent read-only preview ---------------- */}
+      {preview ? <ProgramPreview item={preview} onClose={() => setPreview(null)} /> : null}
     </div>
   );
 }

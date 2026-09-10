@@ -788,8 +788,3 @@ export function blankFromStructure(kind: ProgramDomain, structure: StructureItem
   }));
   return { id: undefined, isNew: true, domain: "nutrition", title: "", mode: "neutral", goal: undefined, athlete: null, durationWeeks: 4, isTemplate: false, sentAt: null, athleteName: null, structure: meals };
 }
-
-export function templateDraftCopy(draft: ProgramDraft): ProgramDraft {
-  const copy = deepCopyDraft(draft, true);
-  return { ...copy, title: draft.title ? `${draft.title} (کپی)` : copy.title, isTemplate: false, athlete: null, athleteName: null, sentAt: null };
-}

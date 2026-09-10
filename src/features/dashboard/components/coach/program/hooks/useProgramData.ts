@@ -24,7 +24,6 @@ import {
   ProgramDay,
   ProgramDomain,
   ProgramDraft,
-  ProgramFoodItem,
   ProgramMeal,
   RefItem,
   StructureItem,
@@ -82,7 +81,8 @@ export function programToast(message: string, tone: "success" | "error" | "info"
 // Server plan shapes (subset of the live plan payloads)
 // -------------------------------------------------------------
 
-export type ServerExercise = { id?: number; name: string; sets: number; reps: number; note?: string; day?: number };
+export type ServerExerciseSet = { reps?: number | null; repetitions?: number | null; weight?: number | null; kg?: number | null; load?: number | null };
+export type ServerExercise = { id?: number; name: string; sets: number; reps: number; weight?: number | null; rest_sec?: number; rest_seconds?: number; unit?: string; note?: string; alternative?: string; alternative_name?: string; set_details?: ServerExerciseSet[]; details?: ServerExerciseSet[]; day?: number };
 export type ServerWorkoutDay = { id?: number; plan?: number; index: number; name?: string; exercises?: ServerExercise[] };
 export type ServerWorkoutPlan = {
   id: number;
@@ -96,7 +96,7 @@ export type ServerWorkoutPlan = {
   days?: ServerWorkoutDay[];
 };
 
-export type ServerFoodItem = { id?: number; meal?: number; food?: number | null; name: string; amount_g: number; note?: string };
+export type ServerFoodItem = { id?: number; meal?: number; food?: number | null; name: string; amount_g: number; amount?: number; unit?: string; calories?: number | null; kcal?: number | null; protein_g?: number | null; protein?: number | null; carb_g?: number | null; carbs?: number | null; carbohydrate_g?: number | null; fat_g?: number | null; fat?: number | null; note?: string; alternative?: string; alternative_name?: string };
 export type ServerMeal = { id?: number; plan?: number; kind?: string; index: number; name: string; items?: ServerFoodItem[] };
 export type ServerNutritionPlan = {
   id: number;
@@ -125,12 +125,6 @@ function plainToRef(raw: PlainRef, fallback: string): RefItem & { code?: string 
     disabled: Boolean(raw.disabled),
     isDefault: raw.is_default === true,
   };
-}
-
-function refBody(item: RefItem | ExecUnitItem | UnitRefItem): Record<string, unknown> {
-  const body: Record<string, unknown> = { name: item.name, disabled: item.disabled === true };
-  if ("code" in item && (item as { code?: string }).code) body.code = (item as { code?: string }).code;
-  return body;
 }
 
 // -------------------------------------------------------------
@@ -816,7 +810,7 @@ async function saveWorkoutPlan(draft: ProgramDraft & { structure: ProgramDay[] }
 
     for (const exercise of day.exercises) {
       if (!exercise.name.trim()) continue;
-      const body = JSON.stringify({ day: dayId, name: exercise.name, sets: exercise.sets, reps: exercise.reps, note: exercise.note || "" });
+      const body = JSON.stringify({ day: dayId, name: exercise.name, sets: exercise.sets, reps: exercise.reps, unit: exercise.unit, weight: exercise.weight ?? undefined, rest_seconds: exercise.restSec, note: exercise.note || "", alternative: exercise.alternative || "" });
       if (exercise.serverId && sourceExercises.some((row) => row.id === exercise.serverId)) {
         try {
           await programFetch(`/exercises/${exercise.serverId}/`, { method: "PATCH", body });
@@ -898,7 +892,7 @@ async function saveNutritionPlan(draft: ProgramDraft & { structure: ProgramMeal[
     for (const item of meal.items) {
       if (!item.name.trim()) continue;
       const amountGrams = item.grams > 0 ? item.grams : item.amount;
-      const body = JSON.stringify({ meal: mealId, food: item.bankKey ? null : null, name: item.name, amount_g: amountGrams, note: item.note || "" });
+      const body = JSON.stringify({ meal: mealId, food: item.bankKey ? null : null, name: item.name, amount_g: amountGrams, calories: item.kcal || undefined, protein_g: item.protein ?? undefined, carb_g: item.carbs ?? undefined, fat_g: item.fat ?? undefined, note: item.note || "", alternative: item.alternative || "" });
       if (item.serverId && sourceItems.some((row) => row.id === item.serverId)) {
         try {
           await programFetch(`/nutrition-meal-items/${item.serverId}/`, { method: "PATCH", body });
