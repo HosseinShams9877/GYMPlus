@@ -1105,3 +1105,45 @@
 @media(max-width:760px){.logoutOverlay{place-items:end center;padding:0 10px 12px}.logoutDialog{width:100%;padding:18px 14px 14px;border-radius:22px}.logoutDialog h2{font-size:16px}.logoutDialog>p{margin:18px 0;font-size:12px}.logoutDialog>div{grid-template-columns:1fr;gap:8px}.logoutDialog>div button{height:52px}.logoutConfirmButton{grid-row:1}.logoutCancelButton{grid-row:2}}
 .weightDialogForm input[type=number],.athleteProfileForm input[type=number]{-moz-appearance:textfield}
 .weightDialogForm input[type=number]::-webkit-inner-spin-button,.weightDialogForm input[type=number]::-webkit-outer-spin-button,.athleteProfileForm input[type=number]::-webkit-inner-spin-button,.athleteProfileForm input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+
+/* Program duration badges (workout summary card + nutrition hero) */
+.workoutSummary p .planDuration{padding:3px 9px;border:1px solid #ffd3b8;border-right:1px solid #ffd3b8;border-radius:999px;background:#fff3ec;color:#c24c07;font-size:9px;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.dailyHeroMeta{margin-top:9px;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.dailyHeroMeta>span{padding:4px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.1);color:#eeeef4;font-size:9px;font-weight:700;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.dailyHeroMeta>span.planDurationDark{border-color:rgba(255,99,3,.52);background:rgba(255,99,3,.16);color:#ffcfae}
+
+/* REQ 4 — one weight field per set inside the set list */
+.setList label>.setWeightField{min-width:0;display:flex;align-items:center;gap:5px}
+.setList label>.setWeightField>em{flex:0 0 auto;color:#8b8b95;font-size:7px;font-style:normal;padding:0;white-space:nowrap}
+.setList label input.setWeightInput{appearance:none;-webkit-appearance:none;width:100%;min-width:0;height:31px;padding:0 6px;border:1px solid #dedee4;border-radius:7px;background:#fff;color:#2f2f3a;display:block;place-content:initial;text-align:center;font-family:inherit;font-size:10px;font-weight:700;line-height:1;cursor:text;transition:border-color .16s,box-shadow .16s}
+.setList label input.setWeightInput::placeholder{color:#b6b6c0;font-weight:400}
+.setList label input.setWeightInput:hover:not(:disabled){border-color:#c9c9d2}
+.setList label input.setWeightInput:focus{border-color:var(--daily-orange);box-shadow:0 0 0 3px #fff1e8;outline:0}
+.setList label input.setWeightInput:disabled{background:#f6f6f8;color:#9a9aa4;opacity:1;cursor:not-allowed}
+.setList label>.setWeightRecord>input.setWeightInput{border-color:var(--daily-orange);background:#fff6f0;color:#b8440a}
+.setList label>.setWeightRecord>em{color:#c24c07;font-weight:800}
+.setList .setDone .setWeightField>input.setWeightInput{border-color:#aee0ce;background:#f4fdf8}
+.setList label{grid-template-columns:22px 24px minmax(64px,.95fr) minmax(50px,.6fr) minmax(98px,1.1fr)}
+
+/* Personal-record summary under each exercise */
+.dailyExerciseTools>.exercisePr{min-height:34px;padding:5px 10px;border:1px solid #e6e6eb;border-radius:8px;background:#fafafc;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.dailyExerciseTools>.exercisePr small{color:#8a8a95;font-size:7px}
+.dailyExerciseTools>.exercisePr b{color:#33333e;font-size:9px;white-space:nowrap}
+.dailyExerciseTools>.exercisePrHit{border-color:#ffd3b8;background:#fff6f0}
+.dailyExerciseTools>.exercisePrHit small{color:#c27a4f}
+.dailyExerciseTools>.exercisePrHit b{color:#c24c07}
+
+@media(max-width:760px){
+  .workoutSummary p .planDuration{font-size:8px;padding-inline:8px}
+  .dailyHeroMeta>span{font-size:8px;padding-inline:8px}
+  .setList label{grid-template-columns:22px 20px minmax(54px,.85fr) minmax(42px,.55fr) minmax(88px,1.05fr)}
+  .setList label>.setWeightField{gap:4px}
+  .setList label input.setWeightInput{height:30px;padding-inline:4px}
+}
+@media(max-width:380px){
+  .setList label{grid-template-columns:22px 18px minmax(0,1fr) minmax(0,.62fr);row-gap:7px;gap:6px}
+  .setList label>.setWeightField{grid-column:1/-1}
+  .setList label input.setWeightInput{height:34px;font-size:11px}
+  .setList label>.setWeightField>em{font-size:8px}
+  .dailyExerciseTools>.exercisePr{flex:1 1 132px}
+}

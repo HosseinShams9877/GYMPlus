@@ -3315,6 +3315,54 @@
   background: #fff;
 }
 
+/* «ذخیره و ارسال برای شاگرد» — weeks prompt shown before a program is sent. */
+.prmDurationBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.prmDurationBody .prmField input {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.prmDurationChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prmDurationChip {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--co-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--co-muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.16s,
+    background 0.16s,
+    color 0.16s;
+}
+
+.prmDurationChip:hover {
+  border-color: var(--co-orange);
+  color: var(--co-orange);
+}
+
+.prmDurationChipActive {
+  border-color: var(--co-orange);
+  background: var(--co-orangeSoft);
+  color: var(--co-orangeDark);
+  font-weight: 700;
+}
+
 /* keep search text readable (the shared .prmSearch box is tinted gray) */
 .prmSearch input {
   color: var(--co-ink);

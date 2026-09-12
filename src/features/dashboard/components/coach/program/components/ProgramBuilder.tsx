@@ -29,6 +29,8 @@ import {
 } from "../program.types";
 import type { ServerNutritionPlan, ServerWorkoutPlan } from "../hooks/useProgramData";
 import { useProgramData } from "../hooks/useProgramData";
+import type { PlanCardSource } from "./ProgramCard";
+import { ProgramPreview } from "./ProgramPreview";
 import {
   PrmBadge,
   PrmEmpty,
@@ -84,7 +86,14 @@ export function ProgramBuilder({
   const [goalChip, setGoalChip] = useState<PlanMode | "all">("all");
   const [bankQuery, setBankQuery] = useState("");
   const [showBank, setShowBank] = useState(false); // mobile bottom-sheet
-  const [preview, setPreview] = useState(false);
+  const [preview, setPreview] = useState(false); // «پیش‌نمایش و ارسال» dialog
+  const [fullPreview, setFullPreview] = useState(false); // read-only full-screen preview
+  /**
+   * «ذخیره و ارسال برای شاگرد» must ask for the plan length before it sends,
+   * exactly like the send dialog does. This holds the raw text of that prompt.
+   */
+  const [durationPrompt, setDurationPrompt] = useState(false);
+  const [durationInput, setDurationInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [sendAthlete, setSendAthlete] = useState(initial?.athlete ? String(initial.athlete) : "");
@@ -284,6 +293,55 @@ export function ProgramBuilder({
   const doneCount = (workout ? days : meals).filter((row) => (workout ? (row as ProgramDay).exercises : (row as ProgramMeal).items).length > 0).length;
   const completedLabel = `${doneCount.toLocaleString("fa-IR")} از ${structureCount.toLocaleString("fa-IR")} ${workout ? "روز" : "وعده"} تکمیل`;
 
+  /**
+   * The full-screen preview (the one program cards open) renders a saved list
+   * card. The builder has no card — only the live draft — so project the draft
+   * into the same shape. Rebuilt on every draft change so the preview always
+   * shows what is on screen right now, including unsaved edits.
+   */
+  const previewSource = useMemo<PlanCardSource>(
+    () => ({
+      uid: `builder-${draft.id ?? "new"}`,
+      local: true,
+      draft,
+      id: draft.id ?? 0,
+      title: draft.title,
+      mode: draft.mode,
+      goal: draft.goal ?? null,
+      sentAt: draft.sentAt ?? null,
+      athlete: draft.athlete ?? null,
+      athleteName: draft.athleteName ?? null,
+      durationWeeks: draft.durationWeeks,
+      doneCount: (draft.structure as (ProgramDay | ProgramMeal)[]).filter(
+        (row) => ((row as ProgramDay).exercises ?? (row as ProgramMeal).items ?? []).length > 0,
+      ).length,
+      totalCount: draft.structure.length,
+      status: draft.sentAt ? "sent" : draft.cardStatus ?? "ready",
+    }),
+    [draft],
+  );
+
+  /** Duration is always a whole number of weeks, never zero. */
+  const normalizeWeeks = (value: number | string | undefined) => {
+    const parsed = Math.round(Number(String(value ?? "").replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))));
+    return Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 104) : 4;
+  };
+
+  /** Opens the weeks prompt for a send, or saves straight away when nothing is sent. */
+  const requestSend = () => {
+    if (!draft.title.trim()) {
+      setError("برای برنامه یک عنوان بنویسید.");
+      return;
+    }
+    if (!athleteBound) {
+      void persist(false);
+      return;
+    }
+    setError("");
+    setDurationInput(String(draft.durationWeeks || 4));
+    setDurationPrompt(true);
+  };
+
   // active structure row — guard against an empty structure before rendering
   const activeDay = workout ? days[activeIndexSafe] : undefined;
   const activeMeal = !workout ? meals[activeIndexSafe] : undefined;
@@ -294,7 +352,7 @@ export function ProgramBuilder({
       : "ترکیب عضلانی از «تنظیمات» تعیین می‌شود"
     : `دسته: ${groupNameOf(activeMeal?.category)}`;
 
-  const persist = async (sendNow: boolean) => {
+  const persist = async (sendNow: boolean, weeksOverride?: number) => {
     if (persisting.current) return; // never create a program twice
     if (!draft.title.trim()) {
       setError("برای برنامه یک عنوان بنویسید.");
@@ -310,16 +368,20 @@ export function ProgramBuilder({
     setError("");
     try {
       const planSnapshot = snapshot ? (workout ? { workout: snapshot as ServerWorkoutPlan } : { nutrition: snapshot as ServerNutritionPlan }) : undefined;
+      // The weeks prompt resolves after this closure captured `draft`, so the
+      // chosen value arrives as an argument and is written into the payload —
+      // the athlete panel reads it back as `duration_weeks`.
+      const weeks = weeksOverride === undefined ? normalizeWeeks(draft.durationWeeks) : normalizeWeeks(weeksOverride);
       // Retry of an interrupted create: reuse the id we already got so we PATCH
       // the same plan instead of POSTing a duplicate.
-      const toSave = createdPlanId.current && !draft.id ? { ...draft, id: createdPlanId.current } : draft;
+      const base = createdPlanId.current && !draft.id ? { ...draft, id: createdPlanId.current } : draft;
+      const toSave = { ...base, durationWeeks: weeks };
       const alreadyAssigned = Boolean(toSave.athlete);
       const { id } = await api.saveDraft(toSave, planSnapshot);
-      if (createdPlanId.current === null) {
-        createdPlanId.current = id;
-        // Mirror the id into state so any later read of draft.id stays correct.
-        if (!draft.id) setDraft((current) => (current.id ? current : { ...current, id }));
-      }
+      if (createdPlanId.current === null) createdPlanId.current = id;
+      // Mirror the id and the confirmed duration into state so any later read
+      // of the draft stays correct.
+      setDraft((current) => ({ ...current, id: current.id ?? id, durationWeeks: weeks }));
       // Deliver the program whenever the coach asked to send (preview «ذخیره
       // و ارسال») OR the draft was opened bound to a student (wizard copy /
       // «ارسال برای شاگرد» / editing a sent card) — a plain save then
@@ -327,7 +389,7 @@ export function ProgramBuilder({
       const mustSend = Boolean(sendAthlete && (sendNow || athleteBound));
       let sent = false;
       if (mustSend) {
-        await api.sendPlan(kind, id, Number(sendAthlete), draft.durationWeeks || 4, alreadyAssigned);
+        await api.sendPlan(kind, id, Number(sendAthlete), weeks, alreadyAssigned);
         sent = true;
       }
       onSaved(id, sent);
@@ -338,6 +400,7 @@ export function ProgramBuilder({
       persisting.current = false;
     }
   };
+
 
   // ------------------------------------------------------------ render
   return (
@@ -396,11 +459,11 @@ export function ProgramBuilder({
               <PrmIcon name="send" /> پیش‌نمایش و ارسال
             </button>
           ) : (
-            <button type="button" className={styles.prmBtn} onClick={() => setPreview(true)}>
-              <PrmIcon name="send" /> پیش‌نمایش
+            <button type="button" className={styles.prmBtn} onClick={() => setFullPreview(true)}>
+              <PrmIcon name="eye" /> پیش‌نمایش
             </button>
           )}
-          <button type="button" className={styles.prmBtnPrimary} onClick={() => void persist(false)} disabled={saving} title={athleteBound ? "ذخیره و ارسال برای شاگرد" : undefined}>
+          <button type="button" className={styles.prmBtnPrimary} onClick={requestSend} disabled={saving} title={athleteBound ? "ذخیره و ارسال برای شاگرد" : undefined}>
             {saving ? "در حال ذخیره..." : athleteBound ? (initial?.isNew ? "ذخیره و ارسال برای شاگرد" : "ذخیره و ارسال مجدد") : "ذخیره برنامه"}
           </button>
         </div>
@@ -646,6 +709,9 @@ export function ProgramBuilder({
             {error ? <PrmNotice tone="red">{error}</PrmNotice> : null}
           </div>
           <div className={styles.prmPreviewActions}>
+            <button type="button" className={styles.prmBtn} onClick={() => setFullPreview(true)} disabled={saving}>
+              <PrmIcon name="eye" /> نمایش تمام‌صفحه
+            </button>
             {!athleteBound ? (
               <button type="button" className={styles.prmBtn} onClick={() => void persist(false)} disabled={saving}>
                 {saving ? "..." : "فقط ذخیره"}
@@ -653,6 +719,82 @@ export function ProgramBuilder({
             ) : null}
             <button type="button" className={styles.prmBtnPrimary} onClick={() => void persist(true)} disabled={saving || !sendAthlete}>
               <PrmIcon name="send" /> {saving ? "در حال ارسال..." : athleteBound ? (resendOnSave ? "ذخیره و ارسال مجدد" : "ذخیره و ارسال برای شاگرد") : "ذخیره و ارسال"}
+            </button>
+          </div>
+        </PrmModal>
+      ) : null}
+
+      {/* «پیش‌نمایش» — the same read-only full-screen view program cards open. */}
+      {fullPreview ? <ProgramPreview item={previewSource} onClose={() => setFullPreview(false)} /> : null}
+
+      {/* «ذخیره و ارسال برای شاگرد» — confirm the plan length before sending. */}
+      {durationPrompt ? (
+        <PrmModal onClose={() => !saving && setDurationPrompt(false)} small>
+          <PrmModalHead
+            title={resendOnSave ? "ارسال مجدد برنامه" : "ارسال برنامه برای شاگرد"}
+            subtitle={draft.title || "بدون عنوان"}
+            onClose={() => !saving && setDurationPrompt(false)}
+          />
+          <div className={styles.prmDurationBody}>
+            <div className={styles.prmBoundStudent}>
+              <span className={styles.prmWizTemplateIcon}>
+                <PrmIcon name="user" size={16} />
+              </span>
+              <span className={styles.prmWizTemplateBody}>
+                <small>شاگرد</small>
+                <b>{initial?.athleteName ?? draft.athleteName ?? "شاگرد"}</b>
+              </span>
+            </div>
+            <label className={styles.prmField}>
+              <span>مدت زمان (هفته)</span>
+              <input
+                className={styles.prmInput}
+                type="number"
+                min={1}
+                max={104}
+                autoFocus
+                value={durationInput}
+                onChange={(event) => setDurationInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    setDurationPrompt(false);
+                    void persist(false, normalizeWeeks(durationInput));
+                  }
+                }}
+              />
+            </label>
+            <div className={styles.prmDurationChips}>
+              {[2, 4, 6, 8, 12].map((weeks) => (
+                <button
+                  key={weeks}
+                  type="button"
+                  className={`${styles.prmDurationChip} ${normalizeWeeks(durationInput) === weeks ? styles.prmDurationChipActive : ""}`}
+                  onClick={() => setDurationInput(String(weeks))}
+                >
+                  {weeks.toLocaleString("fa-IR")} هفته
+                </button>
+              ))}
+            </div>
+            <PrmNotice tone="orange">
+              برنامه به مدت <b>{normalizeWeeks(durationInput).toLocaleString("fa-IR")} هفته</b> برای شاگرد فعال می‌شود و همین مدت در پنل او نمایش داده می‌شود.
+            </PrmNotice>
+            {error ? <PrmNotice tone="red">{error}</PrmNotice> : null}
+          </div>
+          <div className={styles.prmPreviewActions}>
+            <button type="button" className={styles.prmBtn} onClick={() => setDurationPrompt(false)} disabled={saving}>
+              انصراف
+            </button>
+            <button
+              type="button"
+              className={styles.prmBtnPrimary}
+              disabled={saving}
+              onClick={() => {
+                setDurationPrompt(false);
+                void persist(false, normalizeWeeks(durationInput));
+              }}
+            >
+              <PrmIcon name="send" /> {saving ? "در حال ارسال..." : resendOnSave ? "ذخیره و ارسال مجدد" : "ذخیره و ارسال برای شاگرد"}
             </button>
           </div>
         </PrmModal>
