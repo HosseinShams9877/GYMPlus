@@ -1657,6 +1657,10 @@
   width: 28px;
   height: 28px;
 }
+/* ===============================================================
+   Checkbox — responsive, touch-friendly, centered check icon
+   (mobile ≤640 · tablet 641–1024 · desktop ≥1025)
+   =============================================================== */
 
 .prmCheckbox {
   display: inline-flex;
@@ -1664,24 +1668,112 @@
   justify-content: center;
   width: 22px;
   height: 22px;
+  flex: 0 0 auto;
   padding: 0;
   border: 1.5px solid #cdd3da;
   border-radius: 7px;
   background: #fff;
   color: #fff;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+              transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.prmCheckbox svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.5;
+  pointer-events: none;
 }
 
 .prmCheckbox:hover {
   border-color: var(--co-orange);
+  box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.12);
 }
 
-.prmCheckbox:has(svg) {
+.prmCheckbox:active {
+  transform: scale(0.92);
+}
+
+.prmCheckbox:has(svg),
+.prmCheckbox[aria-checked="true"] {
   background: var(--co-orange);
   border-color: var(--co-orange);
+  box-shadow: 0 2px 6px -2px rgba(232, 93, 42, 0.5);
 }
 
+.prmCheckbox:focus-visible {
+  outline: 2px solid rgba(232, 93, 42, 0.5);
+  outline-offset: 2px;
+}
+
+/* --- تبلت: کمی بزرگ‌تر --- */
+@media (max-width: 1024px) {
+  .prmCheckbox {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+  }
+  .prmCheckbox svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* --- موبایل: سایز لمسی --- */
+@media (max-width: 640px) {
+  .prmCheckbox {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    border-width: 2px;
+  }
+  .prmCheckbox svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* --- موبایل خیلی کوچک --- */
+@media (max-width: 380px) {
+  .prmCheckbox {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ===============================================================
+   عرض ستون چک‌باکس در جدول بانک — هماهنگ با سایز چک‌باکس
+   =============================================================== */
+
+/* تبلت */
+@media (max-width: 1024px) {
+  .prmBankTable {
+    --bank-cols: 32px minmax(190px, 1.7fr) minmax(110px, 0.75fr) minmax(120px, 0.8fr) minmax(88px, 0.5fr) minmax(150px, 1.15fr) auto;
+  }
+  .prmFoodTable {
+    --bank-cols: 32px minmax(190px, 1.7fr) minmax(120px, 0.7fr) minmax(90px, 0.5fr) minmax(150px, 1.2fr) auto;
+  }
+}
+
+/* موبایل */
+@media (max-width: 640px) {
+  .prmBankTable {
+    --bank-cols: 40px minmax(150px, 1.6fr) minmax(90px, 0.7fr) minmax(100px, 0.7fr) minmax(75px, 0.5fr) minmax(130px, 1fr) auto;
+  }
+  .prmFoodTable {
+    --bank-cols: 40px minmax(150px, 1.6fr) minmax(100px, 0.7fr) minmax(75px, 0.5fr) minmax(130px, 1fr) auto;
+  }
+}
+
+/* موبایل خیلی کوچک */
+@media (max-width: 380px) {
+  .prmBankTable,
+  .prmFoodTable {
+    --bank-cols: 36px minmax(120px, 1.5fr) minmax(80px, 0.6fr) minmax(60px, 0.4fr) minmax(100px, 1fr) auto;
+  }
+}
 .prmBankEmpty {
   min-width: 100%;
 }
@@ -4143,9 +4235,7 @@
   }
 
   .prmModalHead > button,
-  .prmIconBtn,
-  .prmSwitch,
-  .prmCheckbox {
+  .prmIconBtn {
     min-width: 44px;
     min-height: 44px;
   }
